@@ -1,0 +1,2 @@
+class PalavraChaveController < ApplicationController
+end
