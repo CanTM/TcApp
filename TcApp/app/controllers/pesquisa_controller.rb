@@ -1,2 +1,0 @@
-class PesquisaController < ApplicationController
-end

@@ -1,2 +1,0 @@
-module PesquisaHelper
-end
