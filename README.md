@@ -22,3 +22,7 @@ Angular-cli (instalar via npm)
 
 Git (https://git-scm.com/)  
 Gitflow (https://datasift.github.io/gitflow/IntroducingGitFlow.html)  
+
+### Board
+
+Waffle (https://waffle.io/CanTM/TcApp)  
