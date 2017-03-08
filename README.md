@@ -26,3 +26,7 @@ Gitflow (https://datasift.github.io/gitflow/IntroducingGitFlow.html)
 ### Board
 
 Waffle (https://waffle.io/CanTM/TcApp)  
+
+### Deploy
+
+Heroku (https://www.heroku.com/)
