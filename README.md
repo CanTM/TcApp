@@ -39,12 +39,20 @@ Executar o arquivo: MongoDB\Server\3.4\bin\mongod.exe
 
 A conexão com o banco pode ser feita via um novo terminal, digitando "mongo" ou através do driver java utilizado pelo backend da aplicação.
 
+URI padrão: "mongodb://localhost:27017"
+
+Maiores informações em: http://mongodb.github.io/mongo-java-driver/3.4/driver/
+
 ### Backend
 
 Executar o arquivo: Apache Software Foundation\Tomcat 9.0\bin\startup.bat  
 
 Copiar o arquivo .war para a pasta C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps.
 
+Endereço padrão: "http://localhost:8080/"
+
 ### Frontend
 
 A partir do diretório onde o frontend foi criado, em um terminal, digitar "ng serve".
+
+Endereço padrão: "http://localhost:4200/"
