@@ -30,3 +30,21 @@ Waffle (https://waffle.io/CanTM/TcApp)
 ### Deploy
 
 Heroku (https://www.heroku.com/)
+
+## Como subir o ambiente
+
+### Banco de Dados
+
+Executar o arquivo: MongoDB\Server\3.4\bin\mongod.exe  
+
+A conexão com o banco pode ser feita via um novo terminal, digitando "mongo" ou através do driver java utilizado pelo backend da aplicação.
+
+### Backend
+
+Executar o arquivo: Apache Software Foundation\Tomcat 9.0\bin\startup.bat  
+
+Copiar o arquivo .war para a pasta C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps.
+
+### Frontend
+
+A partir do diretório onde o frontend foi criado, em um terminal, digitar "ng serve".
