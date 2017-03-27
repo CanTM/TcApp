@@ -4,7 +4,12 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.bson.Document;
+
 import com.google.common.collect.Lists;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
@@ -52,10 +57,21 @@ public class TwitterConnection {
 		// Attempts to establish a connection.
 		hosebirdClient.connect();
 
-		while (!hosebirdClient.isDone()) {
+		MongoClient mongoClient = new MongoClient();
+		MongoDatabase database = mongoClient.getDatabase("TcApp");
+		MongoCollection<Document> collection = database.getCollection("tweets");
+
+		int count = 0;
+
+		while (!hosebirdClient.isDone() && count < 50) {
 			String msg = msgQueue.take();
+			Document doc = new Document("tweet", msg);
+			collection.insertOne(doc);
+			count++;
 			System.out.println(msg);
 		}
+
+		mongoClient.close();
 	}
 
 }
