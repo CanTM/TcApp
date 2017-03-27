@@ -34,9 +34,9 @@ public class TwitterConnection {
 		Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
 		StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
 		// Optional: set up some followings and track terms
-		List<Long> followings = Lists.newArrayList(1234L, 566788L);
-		List<String> terms = Lists.newArrayList("twitter", "api");
-		hosebirdEndpoint.followings(followings);
+
+		List<String> terms = Lists.newArrayList("Porto", "Alegre");
+
 		hosebirdEndpoint.trackTerms(terms);
 
 		// These secrets should be read from a config file
