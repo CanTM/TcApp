@@ -14,9 +14,9 @@ public class SearchResource {
 
 	@POST
 	@Path("newSearch")
-	public void createNewSearch(Search search) {
+	public boolean createNewSearch(Search search) {
 		SearchService searchService = new SearchService();
-		searchService.createNewSearch(search);
+		return searchService.createNewSearch(search);
 	}
 
 	@GET
@@ -25,4 +25,11 @@ public class SearchResource {
 		SearchService searchService = new SearchService();
 		return new SearchWrapper(searchService.getSearches(user));
 	}
+
+	@GET
+	public Search getSearch(Search search) {
+		SearchService searchService = new SearchService();
+		return searchService.getSearch(search);
+	}
+
 }

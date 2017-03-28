@@ -14,12 +14,17 @@ public class SearchService {
 
 	private static String SEARCH_COLLECTION = "search";
 
-	public void createNewSearch(Search search) {
+	public boolean createNewSearch(Search search) {
 		DbCommunication db = new DbCommunication();
-		Document doc = new Document("username", search.getUser().getUserName())
-				.append("searchName", search.getSearchName()).append("trackterms", search.getTrackterms());
-		db.addToCollection(SEARCH_COLLECTION, doc);
+		boolean newSearchCreated = false;
+		if (getSearch(search) != null) {
+			Document doc = new Document("username", search.getUser().getUserName())
+					.append("searchName", search.getSearchName()).append("trackterms", search.getTrackterms());
+			db.addToCollection(SEARCH_COLLECTION, doc);
+			newSearchCreated = true;
+		}
 		db.closeDb();
+		return newSearchCreated;
 	}
 
 	public ArrayList<Search> getSearches(User user) {
@@ -34,7 +39,24 @@ public class SearchService {
 			search.setTrackterms(document.getString("trackTerms").split(","));
 			searches.add(search);
 		}
+		db.closeDb();
 		return searches;
+	}
+
+	public Search getSearch(Search search) {
+		DbCommunication db = new DbCommunication();
+		Document doc = new Document("username", search.getUser().getUserName()).append("searchName",
+				search.getSearchName());
+		Search searchFound = new Search();
+		Document document = db.findOne(SEARCH_COLLECTION, doc);
+
+		if (document != null) {
+			searchFound.setUser(new User(document.getString("userName")));
+			searchFound.setSearchName(document.getString("searchName"));
+			searchFound.setTrackterms(document.getString("trackTerms").split(","));
+		}
+		db.closeDb();
+		return searchFound;
 	}
 
 }
