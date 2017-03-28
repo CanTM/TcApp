@@ -23,6 +23,6 @@ public class SearchResource {
 	@Path("/allSearches/{userName}")
 	public SearchWrapper getSearches(User user) {
 		SearchService searchService = new SearchService();
-		return searchService.getSearches(user);
+		return new SearchWrapper(searchService.getSearches(user));
 	}
 }
