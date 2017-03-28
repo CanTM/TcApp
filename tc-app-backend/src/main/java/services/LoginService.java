@@ -7,7 +7,7 @@ import util.DbCommunication;
 
 public class LoginService {
 
-	private final String USERS_COLLECTION = "users";
+	private final String USERS_COLLECTION = "user";
 
 	public void createNewUser(User user) {
 		DbCommunication db = new DbCommunication();
@@ -18,6 +18,8 @@ public class LoginService {
 	public boolean findUser(User user) {
 		DbCommunication db = new DbCommunication();
 		Document doc = new Document("username", user.getUserName()).append("password", user.getPassword());
-		return db.findOne(USERS_COLLECTION, doc);
+		Document docFound = db.findOne(USERS_COLLECTION, doc);
+		boolean found = docFound != null ? true : false;
+		return found;
 	}
 }

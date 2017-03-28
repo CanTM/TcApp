@@ -27,14 +27,17 @@ public class DbCommunication {
 		closeDb();
 	}
 
-	public boolean findOne(String collectionName, Document doc) {
+	public Document findOne(String collectionName, Document doc) {
 		MongoCollection<Document> collection = database.getCollection(collectionName);
-
 		FindIterable<Document> document = collection.find(doc);
 		Document docFound = document.first();
+		return docFound;
+	}
 
-		boolean found = docFound != null ? true : false;
-		return found;
+	public FindIterable<Document> findAll(String collectionName, Document doc) {
+		MongoCollection<Document> collection = database.getCollection(collectionName);
+		FindIterable<Document> documents = collection.find(doc);
+		return documents;
 	}
 
 }

@@ -14,6 +14,11 @@ public class Search implements Serializable {
 
 	}
 
+	public Search(User user, String searchName) {
+		this.user = user;
+		this.searchName = searchName;
+	}
+
 	public Search(User user, String searchName, String[] trackterms) {
 		this.user = user;
 		this.searchName = searchName;
