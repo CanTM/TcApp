@@ -25,6 +25,10 @@ public class TwitterConnection {
 
 	public static void main(String[] args) throws InterruptedException {
 
+		// Google clientid:
+		// 235000148850-e0jdfti14ld7qf9uthd2nes6ql5c37e6.apps.googleusercontent.com
+		// Google client secret: 0n8pQqNVOK1F2i4qGapTEYMv
+
 		/**
 		 * Set up your blocking queues: Be sure to size these properly based on
 		 * expected TPS of your stream
