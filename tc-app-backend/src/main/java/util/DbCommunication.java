@@ -1,4 +1,4 @@
-package database;
+package util;
 
 import org.bson.Document;
 
@@ -10,10 +10,11 @@ import com.mongodb.client.MongoDatabase;
 public class DbCommunication {
 
 	MongoClient mongoClient;
+	MongoDatabase database;
 
-	public MongoDatabase connectDb() {
+	public DbCommunication() {
 		mongoClient = new MongoClient();
-		return mongoClient.getDatabase("TcApp");
+		database = mongoClient.getDatabase("TcApp");
 	}
 
 	public void closeDb() {
@@ -21,21 +22,22 @@ public class DbCommunication {
 	}
 
 	public void addToCollection(String collectionName, Document entry) {
-		MongoDatabase database = connectDb();
 		MongoCollection<Document> collection = database.getCollection(collectionName);
 		collection.insertOne(entry);
 		closeDb();
 	}
 
-	public boolean findOne(String collectionName, Document doc) {
-		MongoDatabase database = connectDb();
+	public Document findOne(String collectionName, Document doc) {
 		MongoCollection<Document> collection = database.getCollection(collectionName);
-
 		FindIterable<Document> document = collection.find(doc);
 		Document docFound = document.first();
+		return docFound;
+	}
 
-		boolean found = docFound != null ? true : false;
-		return found;
+	public FindIterable<Document> findAll(String collectionName, Document doc) {
+		MongoCollection<Document> collection = database.getCollection(collectionName);
+		FindIterable<Document> documents = collection.find(doc);
+		return documents;
 	}
 
 }
