@@ -8,7 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import business.Login;
+import services.LoginService;
 
 @Path("/login")
 public class LoginResource {
@@ -17,7 +17,7 @@ public class LoginResource {
 	@Path("/newUser")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public void createNewUser(@FormParam("username") String username, @FormParam("password") String password) {
-		Login login = new Login();
+		LoginService login = new LoginService();
 		login.createNewUser(username, password);
 	}
 
@@ -25,7 +25,7 @@ public class LoginResource {
 	@Path("/autenticate")
 	public boolean autenticate(@QueryParam(value = "username") String username,
 			@QueryParam(value = "password") String password) {
-		Login login = new Login();
+		LoginService login = new LoginService();
 		return login.findUser(username, password);
 	}
 }

@@ -1,10 +1,10 @@
-package business;
+package services;
 
 import org.bson.Document;
 
-import database.DbCommunication;
+import util.DbCommunication;
 
-public class Login {
+public class LoginService {
 
 	private final String USERS_COLLECTION = "users";
 
