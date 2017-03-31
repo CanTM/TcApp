@@ -6,7 +6,7 @@
   	<display-name>TcApp</display-name>
 
 	<servlet>
-		<servlet-name>tc-app</servlet-name>
+		<servlet-name>tc-app-backend</servlet-name>
 		<servlet-class>
                      com.sun.jersey.spi.container.servlet.ServletContainer
                 </servlet-class>
@@ -18,7 +18,7 @@
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>tc-app</servlet-name>
+		<servlet-name>tc-app-backend</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
 </web-app>
