@@ -7,6 +7,11 @@
 	<version>1.0-SNAPSHOT</version>
 	<name>tc-app-backend Maven Webapp</name>
 	<url>http://maven.apache.org</url>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -35,8 +40,14 @@
 			<artifactId>google-api-client</artifactId>
 			<version>1.22.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>1.9</version>
+		</dependency>
 	</dependencies>
 	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
 		<finalName>tc-app-backend</finalName>
 	</build>
 </project>
