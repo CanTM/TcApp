@@ -4,26 +4,33 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import domains.User;
 import services.LoginService;
 
 @Path("/login")
+@Consumes("text/plain")
+@Produces("text/plain")
 public class LoginResource {
 
 	@POST
 	@Path("/newUser")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public void createNewUser(User user) {
+	public void createNewUser(@QueryParam("userName") String userName, @QueryParam("password") String password) {
 		LoginService login = new LoginService();
-		login.createNewUser(user);
+		login.createNewUser(new User(userName, password));
 	}
 
 	@GET
 	@Path("/autenticate")
-	public boolean autenticate(User user) {
+	public String autenticate(@QueryParam("userName") String userName, @QueryParam("password") String password) {
 		LoginService login = new LoginService();
-		return login.findUser(user);
+		boolean isAutenticated = login.findUser(new User(userName, password));
+		if (isAutenticated) {
+			return "ok";
+		} else {
+			return "fail";
+		}
 	}
 }
