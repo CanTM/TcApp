@@ -1,6 +1,7 @@
 package resources;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -19,8 +20,9 @@ public class SearchResource {
 
 	@POST
 	@Path("newSearch")
-	public boolean createNewSearch(@QueryParam("userName") String userName, @QueryParam("searchName") String searchName,
-			@QueryParam("trackterms") String[] trackterms) {
+	@Consumes("application/x-www-form-urlencoded")
+	public boolean createNewSearch(@FormParam("userName") String userName, @FormParam("searchName") String searchName,
+			@FormParam("trackterms") String[] trackterms) {
 		SearchService searchService = new SearchService();
 		return searchService.createNewSearch(new Search(new User(userName), searchName, trackterms));
 	}

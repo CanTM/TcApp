@@ -1,6 +1,7 @@
 package resources;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -17,7 +18,8 @@ public class LoginResource {
 
 	@POST
 	@Path("/newUser")
-	public void createNewUser(@QueryParam("userName") String userName, @QueryParam("password") String password) {
+	@Consumes("application/x-www-form-urlencoded")
+	public void createNewUser(@FormParam("userName") String userName, @FormParam("password") String password) {
 		LoginService login = new LoginService();
 		login.createNewUser(new User(userName, password));
 	}
