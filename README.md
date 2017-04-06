@@ -65,6 +65,9 @@ Endereço padrão: "http://localhost:4200/"
 
 3. Quando a issue estiver pronta para ser trabalhada, ou seja, quando não estiver bloqueada por nenhuma outra issue, mover o seu card no waffle para "ready".  
 
-4. Para começar a trabalhar na issue, atribuir a quem for iniciar e criar novo branch: git -branch #numero_da_issue master. Automaticamente o card passa para "in progress".  
+4. Para começar a trabalhar na issue, criar novo branch:    
+git -branch #numero_da_issue master   
+git push --set-upstream #numero_da_issue origin  
+Automaticamente o card passa para "in progress".  
 
 5. Ao finalizar a feature, fazer pull request para o master.  
