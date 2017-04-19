@@ -4,7 +4,10 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.bson.Document;
+
 import com.google.common.collect.Lists;
+import com.mongodb.client.MongoCollection;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
@@ -15,6 +18,8 @@ import com.twitter.hbc.core.event.Event;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
+
+import domains.Search;
 
 public class TwitterCommunication {
 
@@ -41,5 +46,21 @@ public class TwitterCommunication {
 				.eventMessageQueue(eventQueue);
 		Client hosebirdClient = builder.build();
 		return hosebirdClient;
+	}
+
+	public void connectClient(Client client, Search search, int timeInterval) throws InterruptedException {
+		DbCommunication db = new DbCommunication();
+		MongoCollection<Document> collection = db.getDatabase().getCollection("tweets");
+		client.connect();
+
+		long endTime = System.currentTimeMillis() + timeInterval;
+
+		while (!client.isDone() && System.currentTimeMillis() < endTime) {
+			String msg = msgQueue.take();
+			Document doc = new Document("tweet", msg).append("userName", search.getUser().getUserName())
+					.append("searchName", search.getSearchName());
+			collection.insertOne(doc);
+		}
+		db.closeDb();
 	}
 }

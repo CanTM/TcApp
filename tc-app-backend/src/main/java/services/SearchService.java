@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import org.bson.Document;
 
 import com.mongodb.client.FindIterable;
+import com.twitter.hbc.core.Client;
 
 import domains.Search;
+import domains.Tweet;
 import domains.User;
 import util.DbCommunication;
+import util.TwitterCommunication;
 
 public class SearchService {
 
@@ -57,6 +60,26 @@ public class SearchService {
 		}
 		db.closeDb();
 		return searchFound;
+	}
+
+	public ArrayList<Tweet> search(Search search, int timeInterval) throws InterruptedException {
+		TwitterCommunication tc = new TwitterCommunication();
+		Search startSearch = getSearch(search);
+		Client client = tc.buildSearchClient(search.getSearchName(), startSearch.getTrackterms());
+		tc.connectClient(client, startSearch, timeInterval);
+		DbCommunication db = new DbCommunication();
+		Document doc = new Document("userName", search.getUser().getUserName()).append("searchName",
+				search.getSearchName());
+		FindIterable<Document> documents = db.findAll("tweets", doc);
+		ArrayList<Tweet> tweets = new ArrayList<Tweet>();
+		for (Document document : documents) {
+			Tweet tweet = new Tweet();
+			tweet.setUsername(document.getString("userName"));
+			tweet.setSearchName(document.getString("searchName"));
+			tweet.setTweetMessage(document.getString("tweet"));
+			tweets.add(tweet);
+		}
+		return tweets;
 	}
 
 }
