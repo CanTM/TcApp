@@ -17,6 +17,10 @@ public class DbCommunication {
 		database = mongoClient.getDatabase("TcApp");
 	}
 
+	public MongoDatabase getDatabase() {
+		return database;
+	}
+
 	public void closeDb() {
 		mongoClient.close();
 	}
