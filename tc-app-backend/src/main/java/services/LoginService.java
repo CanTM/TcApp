@@ -13,6 +13,7 @@ public class LoginService {
 		DbCommunication db = new DbCommunication();
 		Document doc = new Document("username", user.getUserName()).append("password", user.getPassword());
 		db.addToCollection(USERS_COLLECTION, doc);
+		db.closeDb();
 	}
 
 	public boolean findUser(User user) {

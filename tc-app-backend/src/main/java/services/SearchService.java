@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.bson.Document;
 
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 import com.twitter.hbc.core.Client;
 
 import domains.Search;
@@ -21,21 +22,25 @@ public class SearchService {
 		DbCommunication db = new DbCommunication();
 		boolean newSearchCreated = false;
 		if (getSearch(search) != null) {
-			Document doc = new Document("username", search.getUser().getUserName())
-					.append("searchName", search.getSearchName()).append("trackterms", search.getTrackterms());
-			db.addToCollection(SEARCH_COLLECTION, doc);
+			Document doc = new Document("userName", search.getUser().getUserName())
+					.append("searchName", search.getSearchName()).append("trackTerms", search.getTrackterms());
+			MongoCollection<Document> collection = db.getDatabase().getCollection(SEARCH_COLLECTION);
+			collection.insertOne(doc);
+			db.closeDb();
 			newSearchCreated = true;
 		}
 		db.closeDb();
 		return newSearchCreated;
 	}
 
-	public ArrayList<Search> getSearches(User user) {
+	public String getSearches(User user) {
 		DbCommunication db = new DbCommunication();
 		Document doc = new Document("username", user.getUserName());
 		FindIterable<Document> documents = db.findAll(SEARCH_COLLECTION, doc);
 		ArrayList<Search> searches = new ArrayList<Search>();
+		StringBuilder sb = new StringBuilder();
 		for (Document document : documents) {
+			sb.append(document.toJson());
 			Search search = new Search();
 			search.setUser(new User(document.getString("userName")));
 			search.setSearchName(document.getString("searchName"));
@@ -43,7 +48,7 @@ public class SearchService {
 			searches.add(search);
 		}
 		db.closeDb();
-		return searches;
+		return sb.toString();
 	}
 
 	public Search getSearch(Search search) {
@@ -79,6 +84,7 @@ public class SearchService {
 			tweet.setTweetMessage(document.getString("tweet"));
 			tweets.add(tweet);
 		}
+		db.closeDb();
 		return tweets;
 	}
 

@@ -11,21 +11,22 @@ import javax.ws.rs.QueryParam;
 import domains.User;
 import services.LoginService;
 
-@Path("/login")
-@Consumes("text/plain")
-@Produces("text/plain")
+@Path("login")
 public class LoginResource {
 
 	@POST
-	@Path("/newUser")
+	@Path("newUser")
 	@Consumes("application/x-www-form-urlencoded")
-	public void createNewUser(@FormParam("userName") String userName, @FormParam("password") String password) {
+	@Produces("text/plain")
+	public String createNewUser(@FormParam("userName") String userName, @FormParam("password") String password) {
 		LoginService login = new LoginService();
 		login.createNewUser(new User(userName, password));
+		return "OK";
 	}
 
 	@GET
-	@Path("/autenticate")
+	@Path("autenticate")
+	@Produces("text/plain")
 	public String autenticate(@QueryParam("userName") String userName, @QueryParam("password") String password) {
 		LoginService login = new LoginService();
 		boolean isAutenticated = login.findUser(new User(userName, password));
@@ -35,4 +36,5 @@ public class LoginResource {
 			return "fail";
 		}
 	}
+
 }
