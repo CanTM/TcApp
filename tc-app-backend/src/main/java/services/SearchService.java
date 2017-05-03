@@ -1,14 +1,13 @@
 package services;
 
-import java.util.ArrayList;
-
 import org.bson.Document;
 
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 import com.twitter.hbc.core.Client;
 
 import domains.Search;
-import domains.Tweet;
 import domains.User;
 import util.DbCommunication;
 import util.TwitterCommunication;
@@ -16,70 +15,72 @@ import util.TwitterCommunication;
 public class SearchService {
 
 	private static String SEARCH_COLLECTION = "search";
+	private static String USER_NAME = "userName";
+	private static String SEARCH_NAME = "searchName";
+	private static String TRACK_TERMS = "trackTerms";
+	private static String TWEETS = "tweets";
 
-	public boolean createNewSearch(Search search) {
+	public String createNewSearch(Search search) {
 		DbCommunication db = new DbCommunication();
-		boolean newSearchCreated = false;
-		if (getSearch(search) != null) {
-			Document doc = new Document("username", search.getUser().getUserName())
-					.append("searchName", search.getSearchName()).append("trackterms", search.getTrackterms());
-			db.addToCollection(SEARCH_COLLECTION, doc);
-			newSearchCreated = true;
-		}
-		db.closeDb();
-		return newSearchCreated;
-	}
+		FindIterable<Document> document = db.findOne(SEARCH_COLLECTION,
+				new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME, search.getSearchName()));
 
-	public ArrayList<Search> getSearches(User user) {
-		DbCommunication db = new DbCommunication();
-		Document doc = new Document("username", user.getUserName());
-		FindIterable<Document> documents = db.findAll(SEARCH_COLLECTION, doc);
-		ArrayList<Search> searches = new ArrayList<Search>();
-		for (Document document : documents) {
-			Search search = new Search();
-			search.setUser(new User(document.getString("userName")));
-			search.setSearchName(document.getString("searchName"));
-			search.setTrackterms(document.getString("trackTerms").split(","));
-			searches.add(search);
-		}
-		db.closeDb();
-		return searches;
-	}
-
-	public Search getSearch(Search search) {
-		DbCommunication db = new DbCommunication();
-		Document doc = new Document("username", search.getUser().getUserName()).append("searchName",
+		Document doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME,
 				search.getSearchName());
-		Search searchFound = new Search();
-		Document document = db.findOne(SEARCH_COLLECTION, doc);
-
-		if (document != null) {
-			searchFound.setUser(new User(document.getString("userName")));
-			searchFound.setSearchName(document.getString("searchName"));
-			searchFound.setTrackterms(document.getString("trackTerms").split(","));
+		MongoCollection<Document> collection = db.getDatabase().getCollection(SEARCH_COLLECTION);
+		if (document.first() == null) {
+			doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME, search.getSearchName())
+					.append(TRACK_TERMS, search.getTrackterms());
+			collection.insertOne(doc);
+		} else {
+			collection.updateOne(
+					Filters.and(Filters.eq(SEARCH_NAME, search.getSearchName()),
+							Filters.eq(USER_NAME, search.getUser().getUserName())),
+					new Document("$set", new Document(TRACK_TERMS, search.getTrackterms())));
 		}
+		doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME, search.getSearchName());
+		String newSearch = db.findOne(SEARCH_COLLECTION, doc).first().toJson();
+
+		db.closeDb();
+
+		return newSearch;
+	}
+
+	public String getSearches(User user) {
+		DbCommunication db = new DbCommunication();
+		Document doc = new Document(USER_NAME, user.getUserName());
+		FindIterable<Document> documents = db.findAll(SEARCH_COLLECTION, doc);
+		StringBuilder sb = new StringBuilder();
+		for (Document document : documents) {
+			sb.append(document.toJson());
+		}
+		db.closeDb();
+		return sb.toString();
+	}
+
+	public String getSearch(Search search) {
+		DbCommunication db = new DbCommunication();
+		Document doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME,
+				search.getSearchName());
+		String searchFound = db.findOne(SEARCH_COLLECTION, doc).first().toJson();
 		db.closeDb();
 		return searchFound;
 	}
 
-	public ArrayList<Tweet> search(Search search, int timeInterval) throws InterruptedException {
+	public String search(Search search, int timeInterval) throws InterruptedException {
 		TwitterCommunication tc = new TwitterCommunication();
-		Search startSearch = getSearch(search);
-		Client client = tc.buildSearchClient(search.getSearchName(), startSearch.getTrackterms());
-		tc.connectClient(client, startSearch, timeInterval);
+		Client client = tc.buildSearchClient(search);
+		tc.connectClient(client, search, timeInterval);
 		DbCommunication db = new DbCommunication();
-		Document doc = new Document("userName", search.getUser().getUserName()).append("searchName",
+		Document doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME,
 				search.getSearchName());
-		FindIterable<Document> documents = db.findAll("tweets", doc);
-		ArrayList<Tweet> tweets = new ArrayList<Tweet>();
+		FindIterable<Document> documents = db.findAll(TWEETS, doc);
+		StringBuilder sb = new StringBuilder();
 		for (Document document : documents) {
-			Tweet tweet = new Tweet();
-			tweet.setUsername(document.getString("userName"));
-			tweet.setSearchName(document.getString("searchName"));
-			tweet.setTweetMessage(document.getString("tweet"));
-			tweets.add(tweet);
+			sb.append(document.toJson());
 		}
-		return tweets;
+		db.closeDb();
+		return sb.toString();
 	}
 
 }

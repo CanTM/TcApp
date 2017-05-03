@@ -1,14 +1,13 @@
 package domains;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 public class Search implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private User user;
 	private String searchName;
-	private String[] trackterms;
+	private String trackterms;
 
 	public Search() {
 
@@ -19,7 +18,7 @@ public class Search implements Serializable {
 		this.searchName = searchName;
 	}
 
-	public Search(User user, String searchName, String[] trackterms) {
+	public Search(User user, String searchName, String trackterms) {
 		this.user = user;
 		this.searchName = searchName;
 		this.trackterms = trackterms;
@@ -41,18 +40,17 @@ public class Search implements Serializable {
 		this.searchName = searchName;
 	}
 
-	public String[] getTrackterms() {
+	public String getTrackterms() {
 		return trackterms;
 	}
 
-	public void setTrackterms(String[] trackterms) {
+	public void setTrackterms(String trackterms) {
 		this.trackterms = trackterms;
 	}
 
 	@Override
 	public String toString() {
-		return "Search [user=" + user + ", searchName=" + searchName + ", trackterms=" + Arrays.toString(trackterms)
-				+ "]";
+		return "Search [user=" + user + ", searchName=" + searchName + ", trackterms=" + trackterms + "]";
 	}
 
 }
