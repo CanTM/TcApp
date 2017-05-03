@@ -9,18 +9,19 @@ public class LoginService {
 
 	private final String USERS_COLLECTION = "user";
 
-	public void createNewUser(User user) {
+	public String createNewUser(User user) {
 		DbCommunication db = new DbCommunication();
 		Document doc = new Document("username", user.getUserName()).append("password", user.getPassword());
 		db.addToCollection(USERS_COLLECTION, doc);
 		db.closeDb();
+		return findUser(user);
 	}
 
-	public boolean findUser(User user) {
+	public String findUser(User user) {
 		DbCommunication db = new DbCommunication();
 		Document doc = new Document("username", user.getUserName()).append("password", user.getPassword());
-		Document docFound = db.findOne(USERS_COLLECTION, doc).first();
-		boolean found = docFound != null ? true : false;
-		return found;
+		String docFound = db.findOne(USERS_COLLECTION, doc).first().toJson();
+		db.closeDb();
+		return docFound;
 	}
 }

@@ -21,9 +21,8 @@ public class SearchResource {
 	@Produces("text/plain")
 	public String createNewSearch(@FormParam("userName") String userName, @FormParam("searchName") String searchName,
 			@FormParam("trackTerms") String trackTerms) {
-		String[] trackTearmsArray = trackTerms.split(", ");
 		SearchService searchService = new SearchService();
-		return searchService.createNewSearch(new Search(new User(userName), searchName, trackTearmsArray));
+		return searchService.createNewSearch(new Search(new User(userName), searchName, trackTerms));
 	}
 
 	@GET

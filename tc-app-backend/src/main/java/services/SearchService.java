@@ -26,28 +26,26 @@ public class SearchService {
 		DbCommunication db = new DbCommunication();
 		FindIterable<Document> document = db.findOne(SEARCH_COLLECTION,
 				new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME, search.getSearchName()));
-		try {
-			Document doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME,
-					search.getSearchName());
-			MongoCollection<Document> collection = db.getDatabase().getCollection(SEARCH_COLLECTION);
-			if (document.first() == null) {
-				doc = new Document(USER_NAME, search.getUser().getUserName())
-						.append(SEARCH_NAME, search.getSearchName()).append(TRACK_TERMS, search.getTrackterms());
-				collection.insertOne(doc);
-			} else {
-				collection.updateOne(
-						Filters.and(Filters.eq(SEARCH_NAME, search.getSearchName()),
-								Filters.eq(USER_NAME, search.getUser().getUserName())),
-						new Document("$set", new Document(TRACK_TERMS, search.getTrackterms())));
-			}
-			doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME, search.getSearchName());
-			document = db.findOne(SEARCH_COLLECTION, doc);
-		} catch (Exception e) {
-			System.out.print(e.getStackTrace().toString());
-		} finally {
-			db.closeDb();
+
+		Document doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME,
+				search.getSearchName());
+		MongoCollection<Document> collection = db.getDatabase().getCollection(SEARCH_COLLECTION);
+		if (document.first() == null) {
+			doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME, search.getSearchName())
+					.append(TRACK_TERMS, search.getTrackterms());
+			collection.insertOne(doc);
+		} else {
+			collection.updateOne(
+					Filters.and(Filters.eq(SEARCH_NAME, search.getSearchName()),
+							Filters.eq(USER_NAME, search.getUser().getUserName())),
+					new Document("$set", new Document(TRACK_TERMS, search.getTrackterms())));
 		}
-		return document.first().toJson();
+		doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME, search.getSearchName());
+		String newSearch = db.findOne(SEARCH_COLLECTION, doc).first().toJson();
+
+		db.closeDb();
+
+		return newSearch;
 	}
 
 	public String getSearches(User user) {
@@ -72,7 +70,7 @@ public class SearchService {
 		if (document != null) {
 			searchFound.setUser(new User(document.getString(USER_NAME)));
 			searchFound.setSearchName(document.getString(SEARCH_NAME));
-			searchFound.setTrackterms(document.getString(TRACK_TERMS).split(","));
+			// searchFound.setTrackterms(document.getString(TRACK_TERMS).split(","));
 		}
 		db.closeDb();
 		return searchFound;

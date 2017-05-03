@@ -20,8 +20,7 @@ public class LoginResource {
 	@Produces("text/plain")
 	public String createNewUser(@FormParam("userName") String userName, @FormParam("password") String password) {
 		LoginService login = new LoginService();
-		login.createNewUser(new User(userName, password));
-		return "OK";
+		return login.createNewUser(new User(userName, password));
 	}
 
 	@GET
@@ -29,12 +28,7 @@ public class LoginResource {
 	@Produces("text/plain")
 	public String autenticate(@QueryParam("userName") String userName, @QueryParam("password") String password) {
 		LoginService login = new LoginService();
-		boolean isAutenticated = login.findUser(new User(userName, password));
-		if (isAutenticated) {
-			return "ok";
-		} else {
-			return "fail";
-		}
+		return login.findUser(new User(userName, password));
 	}
 
 }
