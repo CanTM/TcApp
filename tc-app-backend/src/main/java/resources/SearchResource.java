@@ -40,16 +40,13 @@ public class SearchResource {
 		return searchService.getSearch(new Search(new User(userName), searchName));
 	}
 
-	/*
-	 * @GET
-	 *
-	 * @Path("/startSearch") public TweetWrapper search(@QueryParam("userName")
-	 * String userName, @QueryParam("searchName") String searchName,
-	 *
-	 * @QueryParam("timeInterval") int timeInterval) throws InterruptedException
-	 * { SearchService searchService = new SearchService(); ArrayList<Tweet>
-	 * tweets = searchService.search(new Search(new User(userName), searchName),
-	 * timeInterval); return new TweetWrapper(tweets); }
-	 */
+	@GET
+	@Path("/startSearch")
+	public String search(@QueryParam("userName") String userName, @QueryParam("searchName") String searchName,
+			@QueryParam("trackTerms") String trackTerms, @QueryParam("timeInterval") int timeInterval)
+			throws InterruptedException {
+		SearchService searchService = new SearchService();
+		return searchService.search(new Search(new User(userName), searchName, trackTerms), timeInterval);
+	}
 
 }

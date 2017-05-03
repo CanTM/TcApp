@@ -5,10 +5,12 @@ import org.bson.Document;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.twitter.hbc.core.Client;
 
 import domains.Search;
 import domains.User;
 import util.DbCommunication;
+import util.TwitterCommunication;
 
 public class SearchService {
 
@@ -16,6 +18,7 @@ public class SearchService {
 	private static String USER_NAME = "userName";
 	private static String SEARCH_NAME = "searchName";
 	private static String TRACK_TERMS = "trackTerms";
+	private static String TWEETS = "tweets";
 
 	public String createNewSearch(Search search) {
 		DbCommunication db = new DbCommunication();
@@ -64,22 +67,20 @@ public class SearchService {
 		return searchFound;
 	}
 
-	/*
-	 * public ArrayList<Tweet> search(Search search, int timeInterval) throws
-	 * InterruptedException { TwitterCommunication tc = new
-	 * TwitterCommunication(); Search startSearch = getSearch(search); Client
-	 * client = tc.buildSearchClient(search.getSearchName(),
-	 * startSearch.getTrackterms()); tc.connectClient(client, startSearch,
-	 * timeInterval); DbCommunication db = new DbCommunication(); Document doc =
-	 * new Document(USER_NAME,
-	 * search.getUser().getUserName()).append(SEARCH_NAME,
-	 * search.getSearchName()); FindIterable<Document> documents =
-	 * db.findAll("tweets", doc); ArrayList<Tweet> tweets = new
-	 * ArrayList<Tweet>(); for (Document document : documents) { Tweet tweet =
-	 * new Tweet(); tweet.setUsername(document.getString(USER_NAME));
-	 * tweet.setSearchName(document.getString(SEARCH_NAME));
-	 * tweet.setTweetMessage(document.getString("tweet")); tweets.add(tweet); }
-	 * db.closeDb(); return tweets; }
-	 */
+	public String search(Search search, int timeInterval) throws InterruptedException {
+		TwitterCommunication tc = new TwitterCommunication();
+		Client client = tc.buildSearchClient(search);
+		tc.connectClient(client, search, timeInterval);
+		DbCommunication db = new DbCommunication();
+		Document doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME,
+				search.getSearchName());
+		FindIterable<Document> documents = db.findAll(TWEETS, doc);
+		StringBuilder sb = new StringBuilder();
+		for (Document document : documents) {
+			sb.append(document.toJson());
+		}
+		db.closeDb();
+		return sb.toString();
+	}
 
 }

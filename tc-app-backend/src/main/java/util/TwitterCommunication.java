@@ -38,12 +38,12 @@ public class TwitterCommunication {
 				"762332170040008705-Gs8p28exE4OO08E1Fe7czRHxRWdOBAI", "vUj1nYZl0oOb3JjIVowwEUNf2GLXT4Z8yDJAWqnsEhUzp");
 	}
 
-	public Client buildSearchClient(String searchName, String... searchTerms) {
-		List<String> terms = Lists.newArrayList(searchTerms);
+	public Client buildSearchClient(Search search) {
+		List<String> terms = Lists.newArrayList(search.getTrackterms().split(", "));
 		hosebirdEndpoint.trackTerms(terms);
-		ClientBuilder builder = new ClientBuilder().name(searchName).hosts(hosebirdHosts).authentication(hosebirdAuth)
-				.endpoint(hosebirdEndpoint).processor(new StringDelimitedProcessor(msgQueue))
-				.eventMessageQueue(eventQueue);
+		ClientBuilder builder = new ClientBuilder().name(search.getSearchName()).hosts(hosebirdHosts)
+				.authentication(hosebirdAuth).endpoint(hosebirdEndpoint)
+				.processor(new StringDelimitedProcessor(msgQueue)).eventMessageQueue(eventQueue);
 		Client hosebirdClient = builder.build();
 		return hosebirdClient;
 	}
