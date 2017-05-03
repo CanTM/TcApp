@@ -1,19 +1,14 @@
 package services;
 
-import java.util.ArrayList;
-
 import org.bson.Document;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import com.twitter.hbc.core.Client;
 
 import domains.Search;
-import domains.Tweet;
 import domains.User;
 import util.DbCommunication;
-import util.TwitterCommunication;
 
 public class SearchService {
 
@@ -60,41 +55,31 @@ public class SearchService {
 		return sb.toString();
 	}
 
-	public Search getSearch(Search search) {
+	public String getSearch(Search search) {
 		DbCommunication db = new DbCommunication();
 		Document doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME,
 				search.getSearchName());
-		Search searchFound = new Search();
-		Document document = db.findOne(SEARCH_COLLECTION, doc).first();
-
-		if (document != null) {
-			searchFound.setUser(new User(document.getString(USER_NAME)));
-			searchFound.setSearchName(document.getString(SEARCH_NAME));
-			// searchFound.setTrackterms(document.getString(TRACK_TERMS).split(","));
-		}
+		String searchFound = db.findOne(SEARCH_COLLECTION, doc).first().toJson();
 		db.closeDb();
 		return searchFound;
 	}
 
-	public ArrayList<Tweet> search(Search search, int timeInterval) throws InterruptedException {
-		TwitterCommunication tc = new TwitterCommunication();
-		Search startSearch = getSearch(search);
-		Client client = tc.buildSearchClient(search.getSearchName(), startSearch.getTrackterms());
-		tc.connectClient(client, startSearch, timeInterval);
-		DbCommunication db = new DbCommunication();
-		Document doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME,
-				search.getSearchName());
-		FindIterable<Document> documents = db.findAll("tweets", doc);
-		ArrayList<Tweet> tweets = new ArrayList<Tweet>();
-		for (Document document : documents) {
-			Tweet tweet = new Tweet();
-			tweet.setUsername(document.getString(USER_NAME));
-			tweet.setSearchName(document.getString(SEARCH_NAME));
-			tweet.setTweetMessage(document.getString("tweet"));
-			tweets.add(tweet);
-		}
-		db.closeDb();
-		return tweets;
-	}
+	/*
+	 * public ArrayList<Tweet> search(Search search, int timeInterval) throws
+	 * InterruptedException { TwitterCommunication tc = new
+	 * TwitterCommunication(); Search startSearch = getSearch(search); Client
+	 * client = tc.buildSearchClient(search.getSearchName(),
+	 * startSearch.getTrackterms()); tc.connectClient(client, startSearch,
+	 * timeInterval); DbCommunication db = new DbCommunication(); Document doc =
+	 * new Document(USER_NAME,
+	 * search.getUser().getUserName()).append(SEARCH_NAME,
+	 * search.getSearchName()); FindIterable<Document> documents =
+	 * db.findAll("tweets", doc); ArrayList<Tweet> tweets = new
+	 * ArrayList<Tweet>(); for (Document document : documents) { Tweet tweet =
+	 * new Tweet(); tweet.setUsername(document.getString(USER_NAME));
+	 * tweet.setSearchName(document.getString(SEARCH_NAME));
+	 * tweet.setTweetMessage(document.getString("tweet")); tweets.add(tweet); }
+	 * db.closeDb(); return tweets; }
+	 */
 
 }

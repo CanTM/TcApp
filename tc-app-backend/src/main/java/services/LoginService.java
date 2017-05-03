@@ -12,7 +12,10 @@ public class LoginService {
 	public String createNewUser(User user) {
 		DbCommunication db = new DbCommunication();
 		Document doc = new Document("username", user.getUserName()).append("password", user.getPassword());
-		db.addToCollection(USERS_COLLECTION, doc);
+		Document document = db.findOne(USERS_COLLECTION, doc).first();
+		if (document == null) {
+			db.addToCollection(USERS_COLLECTION, doc);
+		}
 		db.closeDb();
 		return findUser(user);
 	}

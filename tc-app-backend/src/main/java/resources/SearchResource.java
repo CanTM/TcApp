@@ -26,19 +26,21 @@ public class SearchResource {
 	}
 
 	@GET
-	@Path("/allSearches")
+	@Path("allSearches")
 	@Produces("text/plain")
 	public String getSearches(@QueryParam("userName") String userName) {
 		SearchService searchService = new SearchService();
 		return searchService.getSearches(new User(userName));
 	}
 
+	@GET
+	@Produces("text/plain")
+	public String getSearch(@QueryParam("userName") String userName, @QueryParam("searchName") String searchName) {
+		SearchService searchService = new SearchService();
+		return searchService.getSearch(new Search(new User(userName), searchName));
+	}
+
 	/*
-	 * @GET public Search getSearch(@QueryParam("userName") String
-	 * userName, @QueryParam("searchName") String searchName) { SearchService
-	 * searchService = new SearchService(); return searchService.getSearch(new
-	 * Search(new User(userName), searchName)); }
-	 *
 	 * @GET
 	 *
 	 * @Path("/startSearch") public TweetWrapper search(@QueryParam("userName")
