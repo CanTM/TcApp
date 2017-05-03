@@ -19,7 +19,7 @@ public class LoginService {
 	public boolean findUser(User user) {
 		DbCommunication db = new DbCommunication();
 		Document doc = new Document("username", user.getUserName()).append("password", user.getPassword());
-		Document docFound = db.findOne(USERS_COLLECTION, doc);
+		Document docFound = db.findOne(USERS_COLLECTION, doc).first();
 		boolean found = docFound != null ? true : false;
 		return found;
 	}

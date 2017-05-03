@@ -1,35 +1,35 @@
 package resources;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.QueryParam;
 
+import domains.Search;
 import domains.User;
 import services.SearchService;
 
 @Path("search")
 public class SearchResource {
 
-	/*
-	 * @POST
-	 * 
-	 * @Path("newSearch")
-	 * 
-	 * @Consumes(MediaType.MULTIPART_FORM_DATA) public boolean
-	 * createNewSearch(FormDataContentDisposition formParams) { String
-	 * trackTerms = formParams.getParameters().get("trackTerms");
-	 * 
-	 * SearchService searchService = new SearchService(); return
-	 * searchService.createNewSearch(new Search(new
-	 * User(formParams.getParameters().get("userName")),
-	 * formParams.getParameters().get("searchName"), trackTerms)); }
-	 */
+	@POST
+	@Path("newSearch")
+	@Consumes("application/x-www-form-urlencoded")
+	@Produces("text/plain")
+	public String createNewSearch(@FormParam("userName") String userName, @FormParam("searchName") String searchName,
+			@FormParam("trackTerms") String trackTerms) {
+		String[] trackTearmsArray = trackTerms.split(", ");
+		SearchService searchService = new SearchService();
+		return searchService.createNewSearch(new Search(new User(userName), searchName, trackTearmsArray));
+	}
 
 	@GET
-	@Path("/allSearches/{userName}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public String getSearches(String userName) {
+	@Path("/allSearches")
+	@Produces("text/plain")
+	public String getSearches(@QueryParam("userName") String userName) {
 		SearchService searchService = new SearchService();
 		return searchService.getSearches(new User(userName));
 	}

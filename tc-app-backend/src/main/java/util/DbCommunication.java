@@ -9,8 +9,8 @@ import com.mongodb.client.MongoDatabase;
 
 public class DbCommunication {
 
-	MongoClient mongoClient;
-	MongoDatabase database;
+	private MongoClient mongoClient;
+	private MongoDatabase database;
 
 	public DbCommunication() {
 		mongoClient = new MongoClient();
@@ -18,7 +18,7 @@ public class DbCommunication {
 	}
 
 	public MongoDatabase getDatabase() {
-		return database;
+		return mongoClient.getDatabase("TcApp");
 	}
 
 	public void closeDb() {
@@ -28,14 +28,11 @@ public class DbCommunication {
 	public void addToCollection(String collectionName, Document entry) {
 		MongoCollection<Document> collection = database.getCollection(collectionName);
 		collection.insertOne(entry);
-		closeDb();
 	}
 
-	public Document findOne(String collectionName, Document doc) {
+	public FindIterable<Document> findOne(String collectionName, Document doc) {
 		MongoCollection<Document> collection = database.getCollection(collectionName);
-		FindIterable<Document> document = collection.find(doc);
-		Document docFound = document.first();
-		return docFound;
+		return collection.find(doc);
 	}
 
 	public FindIterable<Document> findAll(String collectionName, Document doc) {
