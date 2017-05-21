@@ -27,10 +27,6 @@ Gitflow (https://datasift.github.io/gitflow/IntroducingGitFlow.html)
 
 Waffle (https://waffle.io/CanTM/TcApp)  
 
-### Deploy
-
-Heroku (https://www.heroku.com/)
-
 ## Como subir o ambiente
 
 ### Banco de Dados
@@ -71,3 +67,13 @@ git push --set-upstream #numero_da_issue origin
 Automaticamente o card passa para "in progress".  
 
 5. Ao finalizar a feature, fazer pull request para o master.  
+
+## URLs Disponíveis
+
+GET http://localhost:8080/tc-app-backend/rest/
+POST http://localhost:8080/tc-app-backend/rest/login/newUser PARAMS: userName, password
+GET http://localhost:8080/tc-app-backend/rest/login/autenticate PARAMS: userName, password
+POST http://localhost:8080/tc-app-backend/rest/search/newSearch PARAMS: userName, searchName, trackTerms, languages
+GET http://localhost:8080/tc-app-backend/rest/search/allSearches PARAMS: userName
+GET http://localhost:8080/tc-app-backend/rest/search PARAMS: userName, searchName
+GET http://localhost:8080/tc-app-backend/rest/search/startSearch PARAMS: userName, searchName, trackTerms, languages, timeInterval
