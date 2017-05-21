@@ -70,10 +70,10 @@ Automaticamente o card passa para "in progress".
 
 ## URLs Disponíveis
 
-GET http://localhost:8080/tc-app-backend/rest/
-POST http://localhost:8080/tc-app-backend/rest/login/newUser PARAMS: userName, password
-GET http://localhost:8080/tc-app-backend/rest/login/autenticate PARAMS: userName, password
-POST http://localhost:8080/tc-app-backend/rest/search/newSearch PARAMS: userName, searchName, trackTerms, languages
-GET http://localhost:8080/tc-app-backend/rest/search/allSearches PARAMS: userName
-GET http://localhost:8080/tc-app-backend/rest/search PARAMS: userName, searchName
-GET http://localhost:8080/tc-app-backend/rest/search/startSearch PARAMS: userName, searchName, trackTerms, languages, timeInterval
+GET http://localhost:8080/tc-app-backend/rest/  
+POST http://localhost:8080/tc-app-backend/rest/login/newUser PARAMS: userName, password  
+GET http://localhost:8080/tc-app-backend/rest/login/autenticate PARAMS: userName, password  
+POST http://localhost:8080/tc-app-backend/rest/search/newSearch PARAMS: userName, searchName, trackTerms, languages  
+GET http://localhost:8080/tc-app-backend/rest/search/allSearches PARAMS: userName  
+GET http://localhost:8080/tc-app-backend/rest/search PARAMS: userName, searchName  
+GET http://localhost:8080/tc-app-backend/rest/search/startSearch PARAMS: userName, searchName, trackTerms, languages, timeInterval  
