@@ -18,6 +18,7 @@ public class SearchService {
 	private static String USER_NAME = "userName";
 	private static String SEARCH_NAME = "searchName";
 	private static String TRACK_TERMS = "trackTerms";
+	private static String LANGUAGES = "languages";
 	private static String TWEETS = "tweets";
 
 	public String createNewSearch(Search search) {
@@ -30,13 +31,14 @@ public class SearchService {
 		MongoCollection<Document> collection = db.getDatabase().getCollection(SEARCH_COLLECTION);
 		if (document.first() == null) {
 			doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME, search.getSearchName())
-					.append(TRACK_TERMS, search.getTrackterms());
+					.append(TRACK_TERMS, search.getTrackterms()).append(LANGUAGES, search.getLanguages());
 			collection.insertOne(doc);
 		} else {
 			collection.updateOne(
 					Filters.and(Filters.eq(SEARCH_NAME, search.getSearchName()),
 							Filters.eq(USER_NAME, search.getUser().getUserName())),
-					new Document("$set", new Document(TRACK_TERMS, search.getTrackterms())));
+					new Document("$set", new Document(TRACK_TERMS, search.getTrackterms()).append(LANGUAGES,
+							search.getLanguages())));
 		}
 		doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME, search.getSearchName());
 		String newSearch = db.findOne(SEARCH_COLLECTION, doc).first().toJson();

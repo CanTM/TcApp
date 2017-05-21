@@ -41,6 +41,12 @@ public class TwitterCommunication {
 	public Client buildSearchClient(Search search) {
 		List<String> terms = Lists.newArrayList(search.getTrackterms().split(", "));
 		hosebirdEndpoint.trackTerms(terms);
+
+		if (search.getLanguages() != null) {
+			List<String> languages = Lists.newArrayList(search.getLanguages().split(", "));
+			hosebirdEndpoint.languages(languages);
+		}
+
 		ClientBuilder builder = new ClientBuilder().name(search.getSearchName()).hosts(hosebirdHosts)
 				.authentication(hosebirdAuth).endpoint(hosebirdEndpoint)
 				.processor(new StringDelimitedProcessor(msgQueue)).eventMessageQueue(eventQueue);

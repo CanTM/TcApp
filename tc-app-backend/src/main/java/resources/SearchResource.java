@@ -20,9 +20,9 @@ public class SearchResource {
 	@Consumes("application/x-www-form-urlencoded")
 	@Produces("text/plain")
 	public String createNewSearch(@FormParam("userName") String userName, @FormParam("searchName") String searchName,
-			@FormParam("trackTerms") String trackTerms) {
+			@FormParam("trackTerms") String trackTerms, @FormParam("languages") String languages) {
 		SearchService searchService = new SearchService();
-		return searchService.createNewSearch(new Search(new User(userName), searchName, trackTerms));
+		return searchService.createNewSearch(new Search(new User(userName), searchName, trackTerms, languages));
 	}
 
 	@GET
@@ -43,10 +43,10 @@ public class SearchResource {
 	@GET
 	@Path("/startSearch")
 	public String search(@QueryParam("userName") String userName, @QueryParam("searchName") String searchName,
-			@QueryParam("trackTerms") String trackTerms, @QueryParam("timeInterval") int timeInterval)
-			throws InterruptedException {
+			@QueryParam("trackTerms") String trackTerms, @QueryParam("languages") String languages,
+			@QueryParam("timeInterval") int timeInterval) throws InterruptedException {
 		SearchService searchService = new SearchService();
-		return searchService.search(new Search(new User(userName), searchName, trackTerms), timeInterval);
+		return searchService.search(new Search(new User(userName), searchName, trackTerms, languages), timeInterval);
 	}
 
 }

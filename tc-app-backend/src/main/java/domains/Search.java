@@ -8,6 +8,7 @@ public class Search implements Serializable {
 	private User user;
 	private String searchName;
 	private String trackterms;
+	private String languages;
 
 	public Search() {
 
@@ -18,10 +19,11 @@ public class Search implements Serializable {
 		this.searchName = searchName;
 	}
 
-	public Search(User user, String searchName, String trackterms) {
+	public Search(User user, String searchName, String trackterms, String languages) {
 		this.user = user;
 		this.searchName = searchName;
 		this.trackterms = trackterms;
+		this.languages = languages;
 	}
 
 	public User getUser() {
@@ -48,9 +50,18 @@ public class Search implements Serializable {
 		this.trackterms = trackterms;
 	}
 
+	public String getLanguages() {
+		return languages;
+	}
+
+	public void setLanguages(String languages) {
+		this.languages = languages;
+	}
+
 	@Override
 	public String toString() {
-		return "Search [user=" + user + ", searchName=" + searchName + ", trackterms=" + trackterms + "]";
+		return "Search [user=" + user + ", searchName=" + searchName + ", trackterms=" + trackterms + ", languages="
+				+ languages + "]";
 	}
 
 }
