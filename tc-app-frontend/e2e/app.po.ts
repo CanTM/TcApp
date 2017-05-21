@@ -1,6 +1,6 @@
 import { browser, element, by } from 'protractor';
 
-export class TcAppFrontendPage {
+export class TCCTestePage {
   navigateTo() {
     return browser.get('/');
   }

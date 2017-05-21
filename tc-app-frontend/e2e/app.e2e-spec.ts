@@ -1,10 +1,10 @@
-import { TcAppFrontendPage } from './app.po';
+import { TCCTestePage } from './app.po';
 
-describe('tc-app-frontend App', () => {
-  let page: TcAppFrontendPage;
+describe('tccteste App', () => {
+  let page: TCCTestePage;
 
   beforeEach(() => {
-    page = new TcAppFrontendPage();
+    page = new TCCTestePage();
   });
 
   it('should display message saying app works', () => {
