@@ -54,11 +54,11 @@ public class TwitterCommunication {
 		return hosebirdClient;
 	}
 
-	public void connectClient(Client client, Search search, int timeInterval) throws InterruptedException {
+	public int connectClient(Client client, Search search, int timeInterval) throws InterruptedException {
 		DbCommunication db = new DbCommunication();
 		MongoCollection<Document> collection = db.getDatabase().getCollection("tweets");
 		client.connect();
-
+		int nroTweets = 0;
 		long endTime = System.currentTimeMillis() + timeInterval;
 
 		while (!client.isDone() && System.currentTimeMillis() < endTime) {
@@ -66,7 +66,9 @@ public class TwitterCommunication {
 			Document doc = new Document("tweet", msg).append("userName", search.getUser().getUserName())
 					.append("searchName", search.getSearchName());
 			collection.insertOne(doc);
+			nroTweets++;
 		}
 		db.closeDb();
+		return nroTweets;
 	}
 }

@@ -46,7 +46,10 @@ public class SearchResource {
 			@QueryParam("trackTerms") String trackTerms, @QueryParam("languages") String languages,
 			@QueryParam("timeInterval") int timeInterval) throws InterruptedException {
 		SearchService searchService = new SearchService();
-		return searchService.search(new Search(new User(userName), searchName, trackTerms, languages), timeInterval);
+		Integer nroTweets = searchService.search(new Search(new User(userName), searchName, trackTerms, languages),
+				timeInterval);
+		String retorno = "{\"data\": " + nroTweets.toString() + "}";
+		return retorno;
 	}
 
 }

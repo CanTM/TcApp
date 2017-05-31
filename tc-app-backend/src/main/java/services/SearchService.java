@@ -1,5 +1,7 @@
 package services;
 
+import java.util.Calendar;
+
 import org.bson.Document;
 
 import com.mongodb.client.FindIterable;
@@ -20,6 +22,9 @@ public class SearchService {
 	private static String TRACK_TERMS = "trackTerms";
 	private static String LANGUAGES = "languages";
 	private static String TWEETS = "tweets";
+	private static String LINE = "line";
+	private static String TIME_INTERVAL = "timeInterval";
+	private static String INITIAL_TIME = "initialTime";
 
 	public String createNewSearch(Search search) {
 		DbCommunication db = new DbCommunication();
@@ -69,10 +74,15 @@ public class SearchService {
 		return searchFound;
 	}
 
-	public String search(Search search, int timeInterval) throws InterruptedException {
+	public int search(Search search, int timeInterval) throws InterruptedException {
 		TwitterCommunication tc = new TwitterCommunication();
 		Client client = tc.buildSearchClient(search);
-		tc.connectClient(client, search, timeInterval);
+		int nroTweets = tc.connectClient(client, search, timeInterval);
+		saveLinePoints(search, nroTweets, timeInterval);
+		return nroTweets;
+	}
+
+	public String getTweets(Search search) {
 		DbCommunication db = new DbCommunication();
 		Document doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME,
 				search.getSearchName());
@@ -83,6 +93,27 @@ public class SearchService {
 		}
 		db.closeDb();
 		return sb.toString();
+	}
+
+	public void saveLinePoints(Search search, int nroTweets, int timeInterval) {
+		DbCommunication db = new DbCommunication();
+		FindIterable<Document> document = db.findOne(LINE,
+				new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME, search.getSearchName()));
+		MongoCollection<Document> collection = db.getDatabase().getCollection(LINE);
+		Document doc = new Document();
+		if (document.first() == null) {
+			doc = new Document(USER_NAME, search.getUser().getUserName()).append(SEARCH_NAME, search.getSearchName())
+					.append(LINE, nroTweets).append(TIME_INTERVAL, timeInterval)
+					.append(INITIAL_TIME, Calendar.getInstance().getTime());
+			collection.insertOne(doc);
+		} else {
+			String addToLine = document.first().get(LINE) + ", " + nroTweets;
+			collection.updateOne(
+					Filters.and(Filters.eq(SEARCH_NAME, search.getSearchName()),
+							Filters.eq(USER_NAME, search.getUser().getUserName())),
+					new Document("$set", new Document(LINE, addToLine)));
+		}
+		db.closeDb();
 	}
 
 }
