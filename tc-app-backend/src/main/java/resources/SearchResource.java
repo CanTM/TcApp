@@ -42,10 +42,13 @@ public class SearchResource {
 
 	@GET
 	@Path("/startSearch")
+	@Produces("text/plain")
 	public String search(@QueryParam("userName") String userName, @QueryParam("searchName") String searchName,
 			@QueryParam("trackTerms") String trackTerms, @QueryParam("languages") String languages,
 			@QueryParam("timeInterval") int timeInterval) throws InterruptedException {
 		SearchService searchService = new SearchService();
+		// searchService.createNewSearch(new Search(new User(userName),
+		// searchName, trackTerms, languages));
 		Integer nroTweets = searchService.search(new Search(new User(userName), searchName, trackTerms, languages),
 				timeInterval);
 		String retorno = "{\"data\": " + nroTweets.toString() + "}";
