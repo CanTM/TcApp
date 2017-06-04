@@ -2,51 +2,24 @@
 <div class="cointainer">
   <div class="row">
     <div class="input-field col s12">
-      <i class="tiny material-icons prefix">person_pin</i>
-      <input placeholder="Usuario" id="userName" type="text" class="validate">
-      <label class="active" for="userName">Insira os dados</label>
-
-      <i class="tiny material-icons prefix">spellcheck</i>
-      <input placeholder="Nome da Busca" id="searchName" type="text" class="validate">
-      <!-- <label class="active" for="searchName">Insira palavras para coleta</label> -->
 
       <i class="tiny material-icons prefix">play_arrow</i>
       <input placeholder="Intervalo de Tempo" id="timeInterval" type="text" class="datepicker">
-      <!-- <label class="active" for="buscar">Insira palavras para coleta</label> -->
-
-      <i class="tiny material-icons prefix">pause</i>
-
-      <input placeholder="Fim" id="timeIntervalFinish" type="text" class="datepicker">
-      <!-- <label class="active" for="buscar">Insira palavras para coleta</label> -->
 
       <i class="tiny material-icons prefix">search</i>
       <input placeholder="Buscar" id="trackTerms" type="text" class="validate">
-      <!-- <label class="active" for="trackTerms">Insira palavras para coleta</label> -->
+
+      <i class="tiny material-icons prefix">language</i>
+      <input placeholder="Linguagem" id="languages" type="text" class="validate">
     </div>
   </div>
 
   <div align="center">
-    <!-- <input class="with-gap" name="buttonPT" type="radio" id="rb1" />
-    <label for="rb1">PT</label>
-    <input class="with-gap" name="buttonEN" type="radio" id="rb2" disabled="disabled" />
-    <label for="rb2">EN</label>
-    <input class="with-gap" name="buttonES" type="radio" id="rb3" disabled="disabled" />
-    <label for="rb3">ES</label> -->
-    <form action="#">
-      <input type="checkbox" id="test5" checked="checked" />
-      <label for="test5">Portugues (PT)</label>
-
-      <input type="checkbox" id="test6" />
-      <label for="test6">Ingles (EN)</label>
-
-      <input type="checkbox" id="test8" disabled="disabled" />
-      <label for="test8">Espanhol (ES)</label>
-    </form>
-  </div>
-
-  <div align="center">
-    <button (click)="search()" class="btn waves-effect waves-light" type="submit" name="action">Submit
+    <button (click)="start_search()" class="btn waves-effect waves-light" type="submit" name="action">Submit
     <i class="material-icons right">send</i>
+    </button>
+    <button (click)="stop_search()" class="btn waves-effect waves-light" type="submit" name="action">Stop
+    <i class="material-icons right">stop</i>
     </button>
   </div>
 </div>

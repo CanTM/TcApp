@@ -15,7 +15,7 @@ const APP_ROUTES: Routes = [
     {path: 'naoEncontrado', component: CursoNaoEncontradoComponent},
     {path: 'cadastro', component: CadastroComponent},
     {path: 'busca', component: BuscaComponent},
-    {path: '', component: HomeComponent}
+    {path: '', component: BuscaComponent}
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(APP_ROUTES);

@@ -4,10 +4,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.bson.Document;
-
 import com.google.common.collect.Lists;
-import com.mongodb.client.MongoCollection;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
@@ -55,20 +52,21 @@ public class TwitterCommunication {
 	}
 
 	public int connectClient(Client client, Search search, int timeInterval) throws InterruptedException {
-		DbCommunication db = new DbCommunication();
-		MongoCollection<Document> collection = db.getDatabase().getCollection("tweets");
 		client.connect();
 		int nroTweets = 0;
 		long endTime = System.currentTimeMillis() + timeInterval;
-
 		while (!client.isDone() && System.currentTimeMillis() < endTime) {
+			// DbCommunication db = new DbCommunication();
+			// MongoCollection<Document> collection =
+			// db.getDatabase().getCollection("tweets");
 			String msg = msgQueue.take();
-			Document doc = new Document("tweet", msg).append("userName", search.getUser().getUserName())
-					.append("searchName", search.getSearchName());
-			collection.insertOne(doc);
+			// Document doc = new Document("tweet", msg).append("userName",
+			// search.getUser().getUserName())
+			// .append("searchName", search.getSearchName());
+			// collection.insertOne(doc);
 			nroTweets++;
+			// db.closeDb();
 		}
-		db.closeDb();
 		return nroTweets;
 	}
 }
