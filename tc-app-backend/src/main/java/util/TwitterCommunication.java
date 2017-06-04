@@ -55,18 +55,23 @@ public class TwitterCommunication {
 		client.connect();
 		int nroTweets = 0;
 		long endTime = System.currentTimeMillis() + timeInterval;
+		System.out.println("Vou entrar no client");
 		while (!client.isDone() && System.currentTimeMillis() < endTime) {
 			// DbCommunication db = new DbCommunication();
 			// MongoCollection<Document> collection =
 			// db.getDatabase().getCollection("tweets");
+			System.out.println("Antes do take" + nroTweets);
 			String msg = msgQueue.take();
 			// Document doc = new Document("tweet", msg).append("userName",
 			// search.getUser().getUserName())
 			// .append("searchName", search.getSearchName());
 			// collection.insertOne(doc);
 			nroTweets++;
+			System.out.println(nroTweets);
 			// db.closeDb();
 		}
+		client.stop();
+		System.out.println("Saí do client: " + nroTweets);
 		return nroTweets;
 	}
 }
