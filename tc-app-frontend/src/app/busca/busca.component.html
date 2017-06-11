@@ -1,3 +1,19 @@
+<style>
+.bar {
+  fill: steelblue;
+}
+
+.bar:hover {
+  fill: brown;
+}
+
+.axis-title {
+  fill: none;
+  stroke: black;
+  stroke-width: 0.5px;
+}
+</style>
+
 <h5>Buscar por palavras ou Hashtags (#)</h5>
 <div class="cointainer">
   <div class="row">
@@ -22,4 +38,9 @@
     <i class="material-icons right">stop</i>
     </button>
   </div>
+
+<div>
+  <h5>{{title}}</h5>
+  <h6>{{subtitle}}</h6>
+  <svg ng-show="desenhar()" width="960" height="500"></svg>
 </div>

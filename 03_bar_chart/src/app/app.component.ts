@@ -17,7 +17,7 @@ import { STATISTICS } from './shared/data';
 })
 export class AppComponent implements OnInit {
 
-  title = 'Pesquisa: Futebol';
+  title = 'Pesquisa: Tweets';
   subtitle = 'Número de Tweets';
 
   private width: number;
