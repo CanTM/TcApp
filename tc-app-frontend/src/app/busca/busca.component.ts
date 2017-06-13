@@ -29,7 +29,8 @@ export class BuscaComponent implements OnInit {
   }
   
   ngOnInit() {
-    var displayDate = new Date().toLocaleTimeString();
+    var date = new Date().toLocaleTimeString().split(":");
+    var displayDate = date[0] + ":" + date[1];
     var freq: Frequency = {letter: displayDate, frequency: 0};
     this.STATISTICS.push(freq);
     this.initSvg();  
@@ -40,6 +41,7 @@ export class BuscaComponent implements OnInit {
 
   start_search() {
     this.recorrente = true;
+    this.STATISTICS.pop();
     this.get_data();
   }
 
@@ -57,7 +59,8 @@ export class BuscaComponent implements OnInit {
       .then(
       (data) => {
         let json = JSON.parse(data);
-        var displayDate = new Date().toLocaleTimeString();
+        var date = new Date().toLocaleTimeString().split(":");
+        var displayDate = date[0] + ":" + date[1];
         var freq: Frequency = {letter: displayDate, frequency: json.data};
         this.STATISTICS.push(freq);
         console.log("data " + data);
@@ -98,18 +101,18 @@ export class BuscaComponent implements OnInit {
 
   private initSvg() {
     this.svg = d3.select("svg");
-    this.width = +this.svg.attr("width") - this.margin.left - this.margin.right ;
+    this.width = +this.svg.attr("width") - this.margin.left - this.margin.right + 40;
     this.height = +this.svg.attr("height") - this.margin.top - this.margin.bottom;
     this.g = this.svg.append("g")
                      .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
     this.g.append("rect")
-                     .attr("width", this.svg.attr("width"))
-                     .attr("height", this.svg.attr("height"))
-                     .style("fill", "white");
+          .attr("width", this.width + 40)
+          .attr("height",this.height + 40)
+          .style("fill", "white");
   }
 
   private initAxis() {
-    this.x = d3Scale.scaleBand().rangeRound([0, this.width]).padding(0.1);
+    this.x = d3Scale.scaleBand().rangeRound([0, this.width - 10]).padding(0.1);
     this.y = d3Scale.scaleLinear().rangeRound([this.height, 0]);
     this.x.domain(this.STATISTICS.map((d) => d.letter));
     this.y.domain([0, d3Array.max(this.STATISTICS, (d) => d.frequency)]);
