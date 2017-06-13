@@ -42,7 +42,8 @@ export class BuscaComponent implements OnInit {
 
   set_date_now(){
     var date = new Date().toLocaleTimeString().split(":");
-    this.displayDate = date[0] + ":" + date[1];
+    var sec = date[2].split(" ");
+    this.displayDate = date[0] + ":" + date[1] + ":" + sec[0];
   }
 
   get_data() {
@@ -60,7 +61,7 @@ export class BuscaComponent implements OnInit {
       (data) => {
         let json = JSON.parse(data);
         this.set_date_now();
-        var freq: Frequency = {letter: this.displayDate, frequency: json.data};
+        var freq: Frequency = {letter: this.displayDate, frequency: json.nroTweets};
         this.STATISTICS.push(freq);
         console.log("data " + data);
         this.STATISTICS.forEach(element => {
