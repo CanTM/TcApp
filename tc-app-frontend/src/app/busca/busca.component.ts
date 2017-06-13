@@ -80,8 +80,9 @@ export class BuscaComponent implements OnInit {
 //Desenho começa aqui
  
   desenhar(){
-    this.g.selectAll(".bar").
-    exit().remove();
+    this.initSvg();  
+    this.initAxis();
+    this.drawAxis();  
     this.drawBars();
   }
 
@@ -101,6 +102,10 @@ export class BuscaComponent implements OnInit {
     this.height = +this.svg.attr("height") - this.margin.top - this.margin.bottom;
     this.g = this.svg.append("g")
                      .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+    this.g.append("rect")
+                     .attr("width", this.svg.attr("width"))
+                     .attr("height", this.svg.attr("height"))
+                     .style("fill", "white");
   }
 
   private initAxis() {
