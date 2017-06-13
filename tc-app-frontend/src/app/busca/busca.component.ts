@@ -21,7 +21,7 @@ class Hashtags {
 })
 
 export class BuscaComponent implements OnInit {
-  
+
   STATISTICS: Frequency[] = [];
   LYFECYCLE: Hashtags[] = [];
   recorrente = true;
@@ -29,14 +29,14 @@ export class BuscaComponent implements OnInit {
 
   constructor() {
   }
-  
+
   ngOnInit() {
     this.set_date_now();
-    var freq: Frequency = {datetime: this.displayDate, frequency: 0};
+    var freq: Frequency = { datetime: this.displayDate, frequency: 0 };
     this.STATISTICS.push(freq);
-    this.initSvg();  
+    this.initSvg();
     this.initAxis();
-    this.drawAxis();  
+    this.drawAxis();
     this.drawBars();
   }
 
@@ -46,7 +46,7 @@ export class BuscaComponent implements OnInit {
     this.get_data();
   }
 
-  set_date_now(){
+  set_date_now() {
     var date = new Date().toLocaleTimeString().split(":");
     var sec = date[2].split(" ");
     this.displayDate = date[0] + ":" + date[1] + ":" + sec[0];
@@ -54,7 +54,6 @@ export class BuscaComponent implements OnInit {
 
   get_data() {
     console.log('aqui vai o fetch');
-    console.log(this.recorrente);
     let userName = "Candice";
     let searchName = "Search";
     let timeInterval = (<HTMLInputElement>document.querySelector('#timeInterval')).value;
@@ -65,18 +64,30 @@ export class BuscaComponent implements OnInit {
       .then((res) => res.text())
       .then(
       (data) => {
+        console.log("data " + data);
         let json = JSON.parse(data);
         this.set_date_now();
-        var freq: Frequency = {datetime: this.displayDate, frequency: json.nroTweets};
+        var freq: Frequency = { datetime: this.displayDate, frequency: json.nroTweets };
         this.STATISTICS.push(freq);
 
         json.hashtags.forEach(element => {
-          var hash: Hashtags = {hashtag: element.hashtag, frequency: element.frequencia};
-          console.log("hashtag: " + hash.hashtag + " frequencia: " + hash.frequency);
-          this.LYFECYCLE.push(hash);
+          var hash: Hashtags = { hashtag: element.hashtag, frequency: element.frequencia };
+          let containHashtag = false;
+          this.LYFECYCLE.forEach(element1 => {
+            if (element1.hashtag.includes(hash.hashtag)) {
+              element1.frequency = element1.frequency + hash.frequency;
+              containHashtag = true;
+            }
+          });
+          if (containHashtag === false) {
+            this.LYFECYCLE.push(hash);
+          }
         });
 
-        console.log("data " + data);
+        this.LYFECYCLE.forEach(element => {
+          console.log("hashtag " + element.hashtag + " " + element.frequency);
+        });
+        
         this.STATISTICS.forEach(element => {
           console.log("frequency " + element.datetime + " " + element.frequency);
         });
@@ -91,20 +102,20 @@ export class BuscaComponent implements OnInit {
     this.recorrente = false;
   }
 
-//Desenho começa aqui
- 
-  desenhar(){
-    this.initSvg();  
+  //Desenho começa aqui
+
+  desenhar() {
+    this.initSvg();
     this.initAxis();
-    this.drawAxis();  
+    this.drawAxis();
     this.drawBars();
   }
 
-//Grafico nro de tweets
+  //Grafico nro de tweets
 
   private width1: number;
   private height1: number;
-  private margin1 = {top: 20, right: 20, bottom: 30, left: 40};
+  private margin1 = { top: 20, right: 20, bottom: 30, left: 40 };
 
   private x1: any;
   private y1: any;
@@ -117,11 +128,11 @@ export class BuscaComponent implements OnInit {
     this.width1 = +this.svg1.attr("width") - this.margin1.left - this.margin1.right + 40;
     this.height1 = +this.svg1.attr("height") - this.margin1.top - this.margin1.bottom;
     this.g1 = this.svg1.append("g")
-                     .attr("transform", "translate(" + this.margin1.left + "," + this.margin1.top + ")");
+      .attr("transform", "translate(" + this.margin1.left + "," + this.margin1.top + ")");
     this.g1.append("rect")
-          .attr("width", this.width1 + 40)
-          .attr("height",this.height1 + 40)
-          .style("fill", "white");
+      .attr("width", this.width1 + 40)
+      .attr("height", this.height1 + 40)
+      .style("fill", "white");
   }
 
   private initAxis() {
@@ -133,32 +144,32 @@ export class BuscaComponent implements OnInit {
 
   private drawAxis() {
     this.g1.append("g")
-          .attr("class", "axis axis--x")
-          .attr("transform", "translate(40," + this.height1 + ")")
-          .call(d3Axis.axisBottom(this.x1));
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(40," + this.height1 + ")")
+      .call(d3Axis.axisBottom(this.x1));
     this.g1.append("g")
-          .attr("class", "axis axis--y")
-          .attr("transform", "translate(40," + 0 + ")")
-          .call(d3Axis.axisLeft(this.y1))
-          .append("text")
-          .attr("class", "axis-title")
-          .attr("transform", "rotate(-90)")
-          .attr("y", 6)
-          .attr("dy", "0.71em")
-          .attr("text-anchor", "end")
-          .text("Número de tweets");
+      .attr("class", "axis axis--y")
+      .attr("transform", "translate(40," + 0 + ")")
+      .call(d3Axis.axisLeft(this.y1))
+      .append("text")
+      .attr("class", "axis-title")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "0.71em")
+      .attr("text-anchor", "end")
+      .text("Número de tweets");
   }
 
   private drawBars() {
     this.g1.selectAll(".bar")
-          .data(this.STATISTICS)
-          .enter().append("rect")
-          .style("fill", "steelblue")
-          .attr("transform", "translate(40," + 0 + ")")
-          .attr("x", (d) => this.x1(d.datetime) )
-          .attr("y", (d) => this.y1(d.frequency) )
-          .attr("width", this.x1.bandwidth())
-          .attr("height", (d) => this.height1 - this.y1(d.frequency) );
+      .data(this.STATISTICS)
+      .enter().append("rect")
+      .style("fill", "steelblue")
+      .attr("transform", "translate(40," + 0 + ")")
+      .attr("x", (d) => this.x1(d.datetime))
+      .attr("y", (d) => this.y1(d.frequency))
+      .attr("width", this.x1.bandwidth())
+      .attr("height", (d) => this.height1 - this.y1(d.frequency));
   }
 
   //Grafico stream
