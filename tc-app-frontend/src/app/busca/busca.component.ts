@@ -29,7 +29,13 @@ export class BuscaComponent implements OnInit {
   }
   
   ngOnInit() {
-     
+    var displayDate = new Date().toLocaleTimeString();
+    var freq: Frequency = {letter: displayDate, frequency: 0};
+    this.STATISTICS.push(freq);
+    this.initSvg();  
+    this.initAxis();
+    this.drawAxis();  
+    this.drawBars();
   }
 
   start_search() {
@@ -73,10 +79,9 @@ export class BuscaComponent implements OnInit {
 
 //Desenho começa aqui
  
-  desenhar(){ 
-    this.initSvg();  
-    this.initAxis();
-    this.drawAxis();  
+  desenhar(){
+    this.g.selectAll(".bar").
+    exit().remove();
     this.drawBars();
   }
 
@@ -96,13 +101,6 @@ export class BuscaComponent implements OnInit {
     this.height = +this.svg.attr("height") - this.margin.top - this.margin.bottom;
     this.g = this.svg.append("g")
                      .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-    
-    var node = this.svg.selectAll(".node")
-
-    node.append("rect")
-    .attr("width", this.svg.attr("width"))
-    .attr("height", this.svg.attr("height"))
-    .attr("fill", 'white'); 
   }
 
   private initAxis() {
@@ -130,17 +128,10 @@ export class BuscaComponent implements OnInit {
   }
 
   private drawBars() {
-    var node = this.svg.selectAll(".bar")
-
-    node.append("rect")
-    .attr("width", this.svg.attr("width"))
-    .attr("height", this.svg.attr("height"))
-    .attr("fill", 'white'); 
-
     this.g.selectAll(".bar")
           .data(this.STATISTICS)
           .enter().append("rect")
-          .attr("class", "bar")
+          .style("fill", "steelblue")
           .attr("x", (d) => this.x(d.letter) )
           .attr("y", (d) => this.y(d.frequency) )
           .attr("width", this.x.bandwidth())
