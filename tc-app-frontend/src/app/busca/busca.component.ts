@@ -62,6 +62,7 @@ export class BuscaComponent implements OnInit {
         let json = JSON.parse(data);
         this.set_date_now();
         var freq: Frequency = {letter: this.displayDate, frequency: json.nroTweets};
+        console.log("Hashtags: " + json.hashtags);
         this.STATISTICS.push(freq);
         console.log("data " + data);
         this.STATISTICS.forEach(element => {
