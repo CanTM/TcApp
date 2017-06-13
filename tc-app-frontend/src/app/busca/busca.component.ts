@@ -118,10 +118,11 @@ export class BuscaComponent implements OnInit {
   private drawAxis() {
     this.g.append("g")
           .attr("class", "axis axis--x")
-          .attr("transform", "translate(0," + this.height + ")")
+          .attr("transform", "translate(40," + this.height + ")")
           .call(d3Axis.axisBottom(this.x));
     this.g.append("g")
           .attr("class", "axis axis--y")
+          .attr("transform", "translate(40," + 0 + ")")
           .call(d3Axis.axisLeft(this.y))
           .append("text")
           .attr("class", "axis-title")
@@ -137,6 +138,7 @@ export class BuscaComponent implements OnInit {
           .data(this.STATISTICS)
           .enter().append("rect")
           .style("fill", "steelblue")
+          .attr("transform", "translate(40," + 0 + ")")
           .attr("x", (d) => this.x(d.letter) )
           .attr("y", (d) => this.y(d.frequency) )
           .attr("width", this.x.bandwidth())
