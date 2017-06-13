@@ -5,7 +5,12 @@ import * as d3Array from "d3-array";
 import * as d3Axis from "d3-axis";
 
 class Frequency {
-  public letter: string;
+  public datetime: string;
+  public frequency: number;
+}
+
+class Hashtags {
+  public hashtag: string;
   public frequency: number;
 }
 
@@ -18,6 +23,7 @@ class Frequency {
 export class BuscaComponent implements OnInit {
   
   STATISTICS: Frequency[] = [];
+  LYFECYCLE: Hashtags[] = [];
   recorrente = true;
   displayDate: string;
 
@@ -26,7 +32,7 @@ export class BuscaComponent implements OnInit {
   
   ngOnInit() {
     this.set_date_now();
-    var freq: Frequency = {letter: this.displayDate, frequency: 0};
+    var freq: Frequency = {datetime: this.displayDate, frequency: 0};
     this.STATISTICS.push(freq);
     this.initSvg();  
     this.initAxis();
@@ -61,11 +67,18 @@ export class BuscaComponent implements OnInit {
       (data) => {
         let json = JSON.parse(data);
         this.set_date_now();
-        var freq: Frequency = {letter: this.displayDate, frequency: json.nroTweets};
+        var freq: Frequency = {datetime: this.displayDate, frequency: json.nroTweets};
         this.STATISTICS.push(freq);
+
+        json.hashtags.forEach(element => {
+          var hash: Hashtags = {hashtag: element.hashtag, frequency: element.frequencia};
+          console.log("hashtag: " + hash.hashtag + " frequencia: " + hash.frequency);
+          this.LYFECYCLE.push(hash);
+        });
+
         console.log("data " + data);
         this.STATISTICS.forEach(element => {
-          console.log("frequency " + element.letter + " " + element.frequency);
+          console.log("frequency " + element.datetime + " " + element.frequency);
         });
         this.desenhar();
         if (this.recorrente === true) {
@@ -114,7 +127,7 @@ export class BuscaComponent implements OnInit {
   private initAxis() {
     this.x1 = d3Scale.scaleBand().rangeRound([0, this.width1 - 40]).padding(0.1);
     this.y1 = d3Scale.scaleLinear().rangeRound([this.height1, 0]);
-    this.x1.domain(this.STATISTICS.map((d) => d.letter));
+    this.x1.domain(this.STATISTICS.map((d) => d.datetime));
     this.y1.domain([0, d3Array.max(this.STATISTICS, (d) => d.frequency)]);
   }
 
@@ -142,7 +155,7 @@ export class BuscaComponent implements OnInit {
           .enter().append("rect")
           .style("fill", "steelblue")
           .attr("transform", "translate(40," + 0 + ")")
-          .attr("x", (d) => this.x1(d.letter) )
+          .attr("x", (d) => this.x1(d.datetime) )
           .attr("y", (d) => this.y1(d.frequency) )
           .attr("width", this.x1.bandwidth())
           .attr("height", (d) => this.height1 - this.y1(d.frequency) );
