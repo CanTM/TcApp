@@ -84,10 +84,14 @@ export class BuscaComponent implements OnInit {
           }
         });
 
+        this.LYFECYCLE.sort(function (a, b) {
+          return b.frequency - a.frequency;
+        });
+
         this.LYFECYCLE.forEach(element => {
           console.log("hashtag " + element.hashtag + " " + element.frequency);
         });
-        
+
         this.STATISTICS.forEach(element => {
           console.log("frequency " + element.datetime + " " + element.frequency);
         });
