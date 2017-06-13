@@ -20,7 +20,7 @@
     <div class="input-field col s12">
 
       <i class="tiny material-icons prefix">play_arrow</i>
-      <input placeholder="Intervalo de Tempo" id="timeInterval" type="text" class="datepicker">
+      <input placeholder="Intervalo de Tempo em Segundos" id="timeInterval" type="text" class="datepicker">
 
       <i class="tiny material-icons prefix">search</i>
       <input placeholder="Buscar" id="trackTerms" type="text" class="validate">
@@ -39,8 +39,12 @@
     </button>
   </div>
 
+<div id="chart">
+  <h5>Número de Tweets</h5>
+  <svg width="1200" height="600"></svg>
+</div>
+
 <div>
-  <h5>{{title}}</h5>
-  <h6>{{subtitle}}</h6>
-  <svg ng-show="desenhar()" width="960" height="500"></svg>
+  <h5>Ciclo de Vida de Hashtags</h5>
+  <svg width="1200" height="600"></svg>
 </div>
