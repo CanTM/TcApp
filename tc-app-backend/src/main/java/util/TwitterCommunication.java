@@ -1,6 +1,8 @@
 package util;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -51,7 +53,8 @@ public class TwitterCommunication {
 		return hosebirdClient;
 	}
 
-	public int connectClient(Client client, Search search, int timeInterval) throws InterruptedException {
+	public String connectClient(Client client, Search search, int timeInterval) throws InterruptedException {
+		HashMap<String, Integer> hashtagsMap = new HashMap<String, Integer>();
 		client.connect();
 		int nroTweets = 0;
 		long endTime = System.currentTimeMillis() + timeInterval;
@@ -62,6 +65,35 @@ public class TwitterCommunication {
 			// db.getDatabase().getCollection("tweets");
 			System.out.println("Antes do take" + nroTweets);
 			String msg = msgQueue.take();
+			System.out.println(msg);
+			if (msg.contains("\"hashtags\"")) {
+				int index1 = msg.indexOf("\"hashtags\"");
+				int index2 = msg.indexOf("\"urls\"");
+				String hashtagsString = msg.substring(index1 + 12, index2 - 2);
+				System.out.println(hashtagsString);
+				String[] stringsArray = null;
+				if (!hashtagsString.isEmpty() && hashtagsString.contains("},")) {
+					stringsArray = hashtagsString.split("},");
+				} else if (!hashtagsString.isEmpty() && hashtagsString.contains("}")) {
+					stringsArray = hashtagsString.split("},");
+				}
+				if (stringsArray != null && stringsArray.length > 0) {
+					for (String element : stringsArray) {
+						System.out.println(element);
+						int index3 = element.indexOf("\"text\"");
+						int index4 = element.indexOf("\"indices\"");
+						String hashtagFiltered = element.substring(index3 + 8, index4 - 2);
+						System.out.println("hashtag: " + hashtagFiltered);
+						if (hashtagsMap.containsKey(hashtagFiltered)) {
+							Integer nroOcorrencias = hashtagsMap.get(hashtagFiltered);
+							hashtagsMap.put(hashtagFiltered, nroOcorrencias + 1);
+						} else {
+							hashtagsMap.put(hashtagFiltered, 1);
+						}
+					}
+				}
+			}
+
 			// Document doc = new Document("tweet", msg).append("userName",
 			// search.getUser().getUserName())
 			// .append("searchName", search.getSearchName());
@@ -72,6 +104,24 @@ public class TwitterCommunication {
 		}
 		client.stop();
 		System.out.println("Saí do client: " + nroTweets);
-		return nroTweets;
+
+		// "hashtags":[{"text":"PrincipeEngin","indices":[38,52]},{"text":"Daghan","indices":[53,60]},{"text":"Selvi","indices":[61,67]}]
+
+		boolean haveHashtags = false;
+		StringBuilder sb = new StringBuilder();
+		sb.append("{\"nroTweets\": " + nroTweets + ",");
+		sb.append("\"hashtags\":[");
+		for (Entry<String, Integer> entry : hashtagsMap.entrySet()) {
+			haveHashtags = true;
+			sb.append("{\"hashtag\":\"" + entry.getKey() + "\", \"frequencia\":" + entry.getValue() + "},");
+		}
+		if (haveHashtags) {
+			sb.deleteCharAt(sb.length() - 1);
+		}
+		sb.append("]}");
+
+		System.out.println(sb.toString());
+		return sb.toString();
+
 	}
 }

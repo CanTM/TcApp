@@ -14,13 +14,13 @@ public class SearchService {
 	 * LANGUAGES = "languages"; private static String TWEETS = "tweets"; private
 	 * static String LINE = "line"; private static String TIME_INTERVAL =
 	 * "timeInterval"; private static String INITIAL_TIME = "initialTime";
-	 * 
+	 *
 	 * public String createNewSearch(Search search) { DbCommunication db = new
 	 * DbCommunication(); FindIterable<Document> document =
 	 * db.findOne(SEARCH_COLLECTION, new Document(USER_NAME,
 	 * search.getUser().getUserName()).append(SEARCH_NAME,
 	 * search.getSearchName()));
-	 * 
+	 *
 	 * Document doc = new Document(USER_NAME,
 	 * search.getUser().getUserName()).append(SEARCH_NAME,
 	 * search.getSearchName()); MongoCollection<Document> collection =
@@ -38,18 +38,18 @@ public class SearchService {
 	 * search.getUser().getUserName()).append(SEARCH_NAME,
 	 * search.getSearchName()); String newSearch = db.findOne(SEARCH_COLLECTION,
 	 * doc).first().toJson();
-	 * 
+	 *
 	 * db.closeDb();
-	 * 
+	 *
 	 * return newSearch; }
-	 * 
+	 *
 	 * public String getSearches(User user) { DbCommunication db = new
 	 * DbCommunication(); Document doc = new Document(USER_NAME,
 	 * user.getUserName()); FindIterable<Document> documents =
 	 * db.findAll(SEARCH_COLLECTION, doc); StringBuilder sb = new
 	 * StringBuilder(); for (Document document : documents) {
 	 * sb.append(document.toJson()); } db.closeDb(); return sb.toString(); }
-	 * 
+	 *
 	 * public String getSearch(Search search) { DbCommunication db = new
 	 * DbCommunication(); Document doc = new Document(USER_NAME,
 	 * search.getUser().getUserName()).append(SEARCH_NAME,
@@ -58,10 +58,10 @@ public class SearchService {
 	 * searchFound; }
 	 */
 
-	public int search(Search search, int timeInterval) throws InterruptedException {
+	public String search(Search search, int timeInterval) throws InterruptedException {
 		TwitterCommunication tc = new TwitterCommunication();
 		Client client = tc.buildSearchClient(search);
-		int nroTweets = tc.connectClient(client, search, timeInterval);
+		String nroTweets = tc.connectClient(client, search, timeInterval);
 		// saveLinePoints(search, nroTweets, timeInterval);
 		return nroTweets;
 	}
@@ -74,7 +74,7 @@ public class SearchService {
 	 * db.findAll(TWEETS, doc); StringBuilder sb = new StringBuilder(); for
 	 * (Document document : documents) { sb.append(document.toJson()); }
 	 * db.closeDb(); return sb.toString(); }
-	 * 
+	 *
 	 * public void saveLinePoints(Search search, int nroTweets, int
 	 * timeInterval) { DbCommunication db = new DbCommunication();
 	 * FindIterable<Document> document = db.findOne(LINE, new

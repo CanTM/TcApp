@@ -53,10 +53,10 @@ public class SearchResource {
 		SearchService searchService = new SearchService();
 		// searchService.createNewSearch(new Search(new User(userName),
 		// searchName, trackTerms, languages));
-		Integer nroTweets = searchService.search(new Search(new User(userName), searchName, trackTerms, languages),
-				timeInterval);
-		String retorno = "{\"data\": " + nroTweets.toString() + "}";
-		return retorno;
+		String nroTweets = searchService.search(new Search(new User(userName), searchName, trackTerms, languages),
+				timeInterval * 1000);
+		// String retorno = "{\"data\": " + nroTweets.toString() + "}";
+		return nroTweets;
 	}
 
 }
