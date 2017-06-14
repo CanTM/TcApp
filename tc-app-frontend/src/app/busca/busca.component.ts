@@ -10,14 +10,9 @@ class Frequency {
 }
 
 class Hashtags {
-  public hashtag: string;
-  public frequency: number;
-  public datetime: string;
-}
-
-class HashtagsStream {
-  public hashtag: string;
-  public date: Date;
+  public key: string;
+  public value: number;
+  public date: string;
 }
 
 @Component({
@@ -30,7 +25,7 @@ export class BuscaComponent implements OnInit {
 
   STATISTICS: Frequency[] = [];
   LYFECYCLE: Hashtags[] = [];
-  STREAM: HashtagsStream[] = [];
+  STREAM: Hashtags[] = [];
   recorrente = true;
   displayDate: string;
 
@@ -41,10 +36,15 @@ export class BuscaComponent implements OnInit {
     this.set_date_now();
     var freq: Frequency = { datetime: this.displayDate, frequency: 0 };
     this.STATISTICS.push(freq);
+    var hash: Hashtags = { key: "none", value: 2, date: this.displayDate };
+    this.LYFECYCLE.push(hash);
+    this.STREAM.push(hash);
     this.initSvg1();
     this.initAxis1();
     this.drawAxis1();
     this.drawBars1();
+    this.initVars();
+    this.transition();
   }
 
   start_search() {
@@ -102,11 +102,11 @@ export class BuscaComponent implements OnInit {
 
   build_lifecycle(json) {
     json.hashtags.forEach(element => {
-      var hash: Hashtags = { hashtag: element.hashtag, frequency: element.frequencia, datetime: this.displayDate };
+      var hash: Hashtags = { key: element.hashtag, value: element.frequencia, date: this.displayDate };
       let containHashtag = false;
       this.LYFECYCLE.forEach(element1 => {
-        if (element1.hashtag.includes(hash.hashtag)) {
-          element1.frequency = element1.frequency + hash.frequency;
+        if (element1.key.includes(hash.key)) {
+          element1.value = element1.value + hash.value;
           containHashtag = true;
         }
       });
@@ -116,18 +116,18 @@ export class BuscaComponent implements OnInit {
     });
 
     this.LYFECYCLE.sort(function (a, b) {
-      return b.frequency - a.frequency;
+      return b.value - a.value;
     });
 
     this.LYFECYCLE.forEach(element => {
-      console.log("hashtag " + element.hashtag + " " + element.frequency);
+      console.log("hashtag " + element.key + " " + element.value);
     });
 
     if (this.LYFECYCLE.length < 20) {
       this.LYFECYCLE.forEach(element => {
         json.streamdata.forEach(element1 => {
-          if (element.hashtag.includes(element1.hashtag)) {
-            var streamHash: HashtagsStream = { hashtag: element1.hashtag, date: element1.date };
+          if (element.key.includes(element1.hashtag)) {
+            var streamHash: Hashtags = { key: element1.hashtag, value: element1.frequencia, date: this.displayDate };
             this.STREAM.push(streamHash);
           }
         });
@@ -135,16 +135,13 @@ export class BuscaComponent implements OnInit {
     } else {
       for (var i = 0; i < 20; i++) {
         json.streamdata.forEach(element1 => {
-          if (this.LYFECYCLE[i].hashtag.includes(element1.hashtag)) {
-            var streamHash: HashtagsStream = { hashtag: element1.hashtag, date: element1.date };
+          if (this.LYFECYCLE[i].key.includes(element1.hashtag)) {
+            var streamHash: Hashtags = { key: element1.hashtag, value: element1.frequencia, date: this.displayDate };
             this.STREAM.push(streamHash);
           }
         });
       }
     }
-    this.STREAM.forEach(element => {
-      console.log("hashtag " + element.hashtag + " " + element.date);
-    });
   }
 
   //Desenho começa aqui
@@ -219,72 +216,113 @@ export class BuscaComponent implements OnInit {
 
   //Exemplo de gráfico stream
 
-      n = 20 // number of layers
-      m = 200 // number of samples per layer
-      k = 10 // number of bumps per layer
+  private n: any;
+  private m: any;
+  private data0: any;
+  private data1: any;
+  private color: any;
 
-     stack = d3.stack().keys(d3.range(this.n)).offset(d3.stackOffsetWiggle)
-      layers0 = this.stack(d3.transpose(d3.range(this.n).map(function () { return this.bumps(this.m, this.k); })))
-      layers1 = this.stack(d3.transpose(d3.range(this.n).map(function () { return this.bumps(this.m, this.k); })))
-      layers = this.layers0.concat(this.layers1)
+  private w: any;
+  private h: any;
+  private mx: any;
+  private my: any;
 
-     svg = d3.select("#stream").select("svg");
-      width = +this.svg.attr("width")
-      height = +this.svg.attr("height")
+  private area: any;
+  private vis: any;
 
-     x = d3.scaleLinear()
-      .domain([0, this.m - 1])
-      .range([0, this.width])
+  private initVars() {
+    this.n = 20; // number of layers
+    this.m = 200; // number of samples per layer
+    this.data0 = d3.layout.stack().offset("wiggle")
+    this.data1 = d3.layout.stack().offset("wiggle")
+    this.color = d3.interpolateRgb("#aad", "#556");
 
-     y = d3.scaleLinear()
-      .domain([d3.min(this.layers, this.stackMin), d3.max(this.layers, this.stackMax)])
-      .range([this.height, 0])
+    this.w = 960;
+    this.h = 500;
+    this.mx = this.m - 1,
+      this.my = d3.max(this.data0.concat(this.data1), function (d) {
+        return d3.max(d, function (d) {
+          return d.y0 + d.y;
+        });
+      });
 
-     z = d3.interpolateCool
+    this.area = d3.svg.area()
+      .x(function (d) { return d.x * this.w / this.mx; })
+      .y0(function (d) { return this.h - d.y0 * this.h / this.my; })
+      .y1(function (d) { return this.h - (d.y + d.y0) * this.h / this.my; });
 
-     area = d3.area()
-      .x(function (d, i) { return this.x(i); })
-      .y0(function (d) { return this.y(d[0]); })
-      .y1(function (d) { return this.y(d[1]); })
+    this.vis = d3.select("#stream").select("svg")
+      .attr("width", this.w)
+      .attr("height", this.h);
 
-    this.svg = this.svg.selectAll("path")
-      .data(this.layers0)
-      .enter().append("path")
-      .attr("d", this.area)
-      .attr("fill", function () { return this.z(Math.random()); })
+    this.vis.selectAll("path")
+      .data(this.data0)
+      .enter().append("svg:path")
+      .style("fill", function () { return this.color(Math.random()); })
+      .attr("d", this.area);
+  }
 
-     stackMax(layer) {
-      return d3.max(layer, function (d) { return d[1]; });
-    }
+  private transition() {
+    d3.selectAll("path")
+      .data(function () {
+        var d = this.data1;
+        this.data1 = this.data0;
+        return this.data0 = d;
+      })
+      .transition()
+      .duration(2500)
+      .attr("d", this.area);
+  }
 
-     stackMin(layer) {
-      return d3.min(layer, function (d) { return d[0]; });
-    }
-
-     transition() {
-      var t;
-      d3.selectAll("path")
-        .data((t = this.layers1, this.layers1 = this.layers0, this.layers0 = t))
-        .transition()
-        .duration(2500)
-        .attr("d", this.area);
-    }
-
-    // Inspired by Lee Byron’s test data generator.
-     bumps(n, m) {
-      var a = [], i;
-      for (i = 0; i < n; ++i) a[i] = 0;
-      for (i = 0; i < m; ++i) this.bump(a, n);
-      return a;
-    }
-
-     bump(a, n) {
-      var x = 1 / (0.1 + Math.random()),
-        y = 2 * Math.random() - 0.5,
-        z = 10 / (0.1 + Math.random());
-      for (var i = 0; i < n; i++) {
-        var w = (i / n - y) * z;
+  private stream_layers(n, m, o) {
+    if (arguments.length < 3) o = 0;
+    function bump(a) {
+      var x = 1 / (.1 + Math.random()),
+        y = 2 * Math.random() - .5,
+        z = 10 / (.1 + Math.random());
+      for (var i = 0; i < m; i++) {
+        var w = (i / m - y) * z;
         a[i] += x * Math.exp(-w * w);
       }
     }
+    return d3.range(n).map(function () {
+      var a = [], i;
+      for (i = 0; i < m; i++) a[i] = o + o * Math.random();
+      for (i = 0; i < 5; i++) bump(a);
+      return a.map(this.stream_index);
+    });
   }
+
+  /* Another layer generator using gamma distributions. */
+  private stream_waves(n, m) {
+    return d3.range(n).map(function (i) {
+      return d3.range(m).map(function (j) {
+        var x = 20 * j / m - i / 3;
+        return 2 * x * Math.exp(-.5 * x);
+      }).map(this.stream_index);
+    });
+  }
+
+  private stream_index(d, i) {
+    return { x: i, y: Math.max(0, d) };
+  }
+
+//   var stack = d3.stack();
+
+// var area = d3.area()
+//     .x(function(d, i) { return x(d.data.date); })
+//     .y0(function(d) { return y(d[0]); })
+//     .y1(function(d) { return y(d[1]); });
+
+// var g = svg.append("g")
+//     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// d3.tsv("data.tsv", type, function(error, data) {
+//   if (error) throw error;
+
+//   var keys = data.columns.slice(1);
+
+//   x.domain(d3.extent(data, function(d) { return d.date; }));
+//   z.domain(keys);
+//   stack.keys(keys);
+}
