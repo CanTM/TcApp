@@ -1,5 +1,7 @@
 package services;
 
+import java.text.ParseException;
+
 import com.twitter.hbc.core.Client;
 
 import domains.Search;
@@ -58,7 +60,7 @@ public class SearchService {
 	 * searchFound; }
 	 */
 
-	public String search(Search search, int timeInterval) throws InterruptedException {
+	public String search(Search search, int timeInterval) throws InterruptedException, ParseException {
 		TwitterCommunication tc = new TwitterCommunication();
 		Client client = tc.buildSearchClient(search);
 		String nroTweets = tc.connectClient(client, search, timeInterval);

@@ -1,5 +1,7 @@
 package resources;
 
+import java.text.ParseException;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -49,7 +51,7 @@ public class SearchResource {
 	@Produces("text/plain")
 	public String search(@QueryParam("userName") String userName, @QueryParam("searchName") String searchName,
 			@QueryParam("trackTerms") String trackTerms, @QueryParam("languages") String languages,
-			@QueryParam("timeInterval") int timeInterval) throws InterruptedException {
+			@QueryParam("timeInterval") int timeInterval) throws InterruptedException, ParseException {
 		SearchService searchService = new SearchService();
 		// searchService.createNewSearch(new Search(new User(userName),
 		// searchName, trackTerms, languages));

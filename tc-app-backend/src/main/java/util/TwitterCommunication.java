@@ -1,5 +1,8 @@
 package util;
 
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -53,8 +56,10 @@ public class TwitterCommunication {
 		return hosebirdClient;
 	}
 
-	public String connectClient(Client client, Search search, int timeInterval) throws InterruptedException {
-		HashMap<String, Integer> hashtagsMap = new HashMap<String, Integer>();
+	public String connectClient(Client client, Search search, int timeInterval)
+			throws InterruptedException, ParseException {
+		HashMap<String, Integer> hashtagsMapCount = new HashMap<String, Integer>();
+		HashMap<String, String> hashtagsMapDate = new HashMap<String, String>();
 		client.connect();
 		int nroTweets = 0;
 		long endTime = System.currentTimeMillis() + timeInterval;
@@ -84,12 +89,13 @@ public class TwitterCommunication {
 						int index4 = element.indexOf("\"indices\"");
 						String hashtagFiltered = element.substring(index3 + 8, index4 - 2);
 						System.out.println("hashtag: " + hashtagFiltered);
-						if (hashtagsMap.containsKey(hashtagFiltered)) {
-							Integer nroOcorrencias = hashtagsMap.get(hashtagFiltered);
-							hashtagsMap.put(hashtagFiltered, nroOcorrencias + 1);
+						if (hashtagsMapCount.containsKey(hashtagFiltered)) {
+							Integer nroOcorrencias = hashtagsMapCount.get(hashtagFiltered);
+							hashtagsMapCount.put(hashtagFiltered, nroOcorrencias + 1);
 						} else {
-							hashtagsMap.put(hashtagFiltered, 1);
+							hashtagsMapCount.put(hashtagFiltered, 1);
 						}
+						hashtagsMapDate.put(hashtagFiltered, getTimeNow());
 					}
 				}
 			}
@@ -111,9 +117,19 @@ public class TwitterCommunication {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{\"nroTweets\": " + nroTweets + ",");
 		sb.append("\"hashtags\":[");
-		for (Entry<String, Integer> entry : hashtagsMap.entrySet()) {
+		for (Entry<String, Integer> entry : hashtagsMapCount.entrySet()) {
 			haveHashtags = true;
 			sb.append("{\"hashtag\":\"" + entry.getKey() + "\", \"frequencia\":" + entry.getValue() + "},");
+		}
+		if (haveHashtags) {
+			sb.deleteCharAt(sb.length() - 1);
+		}
+		sb.append("],");
+		haveHashtags = false;
+		sb.append("\"streamdata\":[");
+		for (Entry<String, String> entry : hashtagsMapDate.entrySet()) {
+			haveHashtags = true;
+			sb.append("{\"hashtag\":\"" + entry.getKey() + "\", \"date\":\"" + entry.getValue() + "\"},");
 		}
 		if (haveHashtags) {
 			sb.deleteCharAt(sb.length() - 1);
@@ -123,5 +139,12 @@ public class TwitterCommunication {
 		System.out.println(sb.toString());
 		return sb.toString();
 
+	}
+
+	public String getTimeNow() {
+		LocalDateTime now = LocalDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+		String formatDateTime = now.format(formatter);
+		return formatDateTime;
 	}
 }
