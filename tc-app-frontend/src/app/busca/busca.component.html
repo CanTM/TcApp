@@ -1,17 +1,19 @@
 <style>
-.bar {
-  fill: steelblue;
-}
+  .bar {
+    fill: steelblue;
+  }
 
-.bar:hover {
-  fill: brown;
-}
 
-.axis-title {
-  fill: none;
-  stroke: black;
-  stroke-width: 0.5px;
-}
+  .bar:hover {
+    fill: brown;
+  }
+
+
+  .axis-title {
+    fill: none;
+    stroke: black;
+    stroke-width: 0.5px;
+  }
 </style>
 
 <h5>Buscar por palavras ou Hashtags (#)</h5>
@@ -39,12 +41,17 @@
     </button>
   </div>
 
-<div id="chart">
-  <h5>Número de Tweets</h5>
-  <svg width="1200" height="600"></svg>
-</div>
+  <div id="chart">
+    <h5>Número de Tweets</h5>
+    <svg width="1200" height="600"></svg>
+  </div>
 
-<div id="stream">
-  <h5>Ciclo de vida de hashtags</h5>
-  <svg width="1200" height="600"></svg>
+  <div id="stream">
+    <h5>Ranking de hashtags</h5>
+    <svg width="1200" height="600"></svg>
+  </div>
+
+  <ol *ngFor="let hash of STREAM">
+    {{ hash.order }} - {{ hash.key }}
+  </ol>
 </div>
