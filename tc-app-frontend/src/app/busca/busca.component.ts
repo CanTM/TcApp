@@ -9,11 +9,21 @@ class Frequency {
   public frequency: number;
 }
 
+class Data {
+  public datetime: Date;
+  public frequency: number;
+}
+
 class Hashtags {
   public key: string;
   public value: number;
   public date: string;
   public order: number;
+}
+
+class Lifecycle {
+  public hashtag: string;
+  public values: Data[];
 }
 
 @Component({
@@ -27,6 +37,8 @@ export class BuscaComponent implements OnInit {
   private STATISTICS: Frequency[] = [];
   private LYFECYCLE: Hashtags[] = [];
   private STREAM: Hashtags[] = [];
+  private ALL: Lifecycle[] = [];
+  private ALLFILTERED: Lifecycle[] = [];
   recorrente = true;
   displayDate: string;
 
@@ -40,6 +52,8 @@ export class BuscaComponent implements OnInit {
     var hash: Hashtags = { key: "none", value: 0, date: this.displayDate, order: 0 };
     this.LYFECYCLE.push(hash);
     this.STREAM.push(hash);
+    var life: Lifecycle = { hashtag: "none", values: [{ datetime: new Date(), frequency: 0 }] };
+    this.ALLFILTERED.push(life);
     this.initSvg1();
     this.initAxis1();
     this.drawAxis1();
@@ -48,6 +62,7 @@ export class BuscaComponent implements OnInit {
     this.initAxis2();
     this.drawAxis2();
     this.drawBars2();
+    this.draw_line();
   }
 
   start_search() {
@@ -55,6 +70,7 @@ export class BuscaComponent implements OnInit {
     this.STATISTICS.pop();
     this.LYFECYCLE.pop();
     this.STREAM.pop();
+    this.ALLFILTERED.pop();
     this.get_data();
   }
 
@@ -76,7 +92,7 @@ export class BuscaComponent implements OnInit {
       .then((res) => res.text())
       .then(
       (data) => {
-        console.log("data " + data);
+        //console.log("data " + data);
         let json = JSON.parse(data);
 
         //monta gráfico 1
@@ -100,17 +116,18 @@ export class BuscaComponent implements OnInit {
     this.set_date_now();
     var freq: Frequency = { datetime: this.displayDate, frequency: json.nroTweets };
     this.STATISTICS.push(freq);
-    this.STATISTICS.forEach(element => {
-      console.log("frequency " + element.datetime + " " + element.frequency);
-    });
+    // this.STATISTICS.forEach(element => {
+    //   console.log("frequency " + element.datetime + " " + element.frequency);
+    // });
   }
 
   build_lifecycle(json) {
     json.hashtags.forEach(element => {
       var hash: Hashtags = { key: element.hashtag, value: element.frequencia, date: this.displayDate, order: 0 };
+      this.ALL.push({ hashtag: element.hashtag, values: [{ datetime: new Date(), frequency: element.frequencia }] });
       let containHashtag = false;
       this.LYFECYCLE.forEach(element1 => {
-        if (element1.key.includes(hash.key)) {
+        if (element1.key==hash.key) {
           element1.value = element1.value + hash.value;
           containHashtag = true;
         }
@@ -124,26 +141,81 @@ export class BuscaComponent implements OnInit {
       return b.value - a.value;
     });
 
-    this.LYFECYCLE.forEach(element => {
-      console.log("hashtag " + element.key + " " + element.value);
+    // this.LYFECYCLE.forEach(element => {
+    //   console.log("hashtag " + element.key + " " + element.value);
+    // });
+    console.log("ESSA É A LISTA ALL")
+    this.ALL.forEach(element => {
+      console.log("hashtag " + element.hashtag);
+      element.values.forEach(element1 => {
+        console.log("data: " + element1.datetime + " frequencia: " + element1.frequency);
+      })
     });
 
     this.STREAM = [];
+    this.ALLFILTERED = [];
 
     var nb = 1;
+    var hasHashtag = false;
+
     if (this.LYFECYCLE.length < 15) {
+      console.log("ENTREINO PRIMEIRO IF")
       this.LYFECYCLE.forEach(element => {
-        var streamHash: Hashtags = { key: element.key, value: element.value, date: this.displayDate, order:nb };
+        var streamHash: Hashtags = { key: element.key, value: element.value, date: this.displayDate, order: nb };
         this.STREAM.push(streamHash);
         nb++;
+
+        this.ALL.forEach(element1 => {
+          if (element1.hashtag==element.key) {
+            console.log("ENTREINO SEGUNDO IF")
+            this.ALLFILTERED.forEach(element2 => {
+              if (element2.hashtag==element1.hashtag) {
+                console.log("ENTREINO TERCEIRO IF")
+                element2.values.push(element1.values[0]);
+                hasHashtag = true;
+              }
+            })
+          }
+          console.log("Tem Hashtags: " + hasHashtag)
+          if (hasHashtag === false) {
+            console.log("ENTREINO QUARTO IF")
+            this.ALLFILTERED.push({ hashtag: element1.hashtag, values: [element1.values[0]] });
+          }
+          hasHashtag = false;
+        })
       })
     } else {
+      console.log("ENTREINO PRIMEIRO ELSE")
       for (var i = 0; i < 15; i++) {
-        var streamHash: Hashtags = { key: this.LYFECYCLE[i].key, value: this.LYFECYCLE[i].value, date: this.displayDate, order:nb };
+        var streamHash: Hashtags = { key: this.LYFECYCLE[i].key, value: this.LYFECYCLE[i].value, date: this.displayDate, order: nb };
         this.STREAM.push(streamHash);
         nb++;
+        hasHashtag = false;
+        this.ALL.forEach(element1 => {
+          if (this.LYFECYCLE[i].key==element1.hashtag) {
+            this.ALLFILTERED.forEach(element2 => {
+              if (element2.hashtag==element1.hashtag) {
+                element2.values.push(element1.values[0]);
+                hasHashtag = true;
+              }
+            })
+            if (hasHashtag === false) {
+              this.ALLFILTERED.push({ hashtag: element1.hashtag, values: [element1.values[0]] });
+            }
+          }
+        })
+        hasHashtag = false;
       }
     }
+    console.log("ESSA É A LISTA ALLFILTERED")
+    this.ALLFILTERED.forEach(element => {
+      console.log("hashtag " + element.hashtag);
+      element.values.forEach(element1 => {
+        console.log("data: " + element1.datetime + " frequencia: " + element1.frequency);
+      })
+    });
+
+
   }
 
   //Desenho começa aqui
@@ -157,6 +229,7 @@ export class BuscaComponent implements OnInit {
     this.initAxis2();
     this.drawAxis2();
     this.drawBars2();
+    this.draw_line();
   }
 
   //Grafico nro de tweets
@@ -278,5 +351,97 @@ export class BuscaComponent implements OnInit {
       .attr("width", this.x1.bandwidth())
       .attr("height", (d) => this.height1 - this.y1(d.frequency));
   }
+
+
+  data: any;
+
+  svg: any;
+  margin = { top: 20, right: 80, bottom: 30, left: 50 };
+  g: any;
+  width: number;
+  height: number;
+  x;
+  y;
+  z;
+  line;
+
+  draw_line() {
+
+    this.data = this.ALLFILTERED.map((v) => v.values.map((v) => v.datetime))[0];
+    //.reduce((a, b) => a.concat(b), []);
+
+    this.initChart();
+    this.drawAxis();
+    this.drawPath();
+  }
+
+  private initChart(): void {
+    this.svg = d3.select("#lifecycle").select("svg");
+
+    this.width = this.svg.attr("width") - this.margin.left - this.margin.right;
+    this.height = this.svg.attr("height") - this.margin.top - this.margin.bottom;
+
+    this.g = this.svg.append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+    this.g.append("rect")
+      .attr("width", this.width2 + 40)
+      .attr("height", this.height2 + 40)
+      .style("fill", "white");
+
+    this.x = d3Scale.scaleTime().range([0, this.width]);
+    this.y = d3Scale.scaleLinear().range([this.height, 0]);
+    this.z = d3Scale.scaleOrdinal(d3Scale.schemeCategory10);
+
+    this.line = d3.line()
+      .curve(d3.curveBasis)
+      .x((d: Data) => this.x(d.datetime))
+      .y((d: Data) => this.y(d.frequency));
+
+    this.x.domain(d3Array.extent(this.data, (d: Date) => d));
+
+    this.y.domain([
+      d3Array.min(this.ALLFILTERED, function (c) { return d3Array.min(c.values, function (d) { return d.frequency; }); }),
+      d3Array.max(this.ALLFILTERED, function (c) { return d3Array.max(c.values, function (d) { return d.frequency; }); })
+    ]);
+
+    this.z.domain(this.ALLFILTERED.map(function (c) { return c.hashtag; }));
+  }
+
+  private drawAxis(): void {
+    this.g.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + this.height + ")")
+      .call(d3Axis.axisBottom(this.x));
+
+    this.g.append("g")
+      .attr("class", "axis axis--y")
+      .call(d3Axis.axisLeft(this.y))
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "0.71em")
+      .attr("fill", "#000")
+      .text("Hashtags");
+  }
+
+  private drawPath(): void {
+    let hashtag = this.g.selectAll(".line")
+      .data(this.ALLFILTERED)
+      .enter().append("g")
+      .attr("class", "hashtag");
+
+    hashtag.append("path")
+      .attr("class", "line")
+      .attr("d", (d) => this.line(d.values))
+      .style("stroke", (d) => this.z(d.id));
+
+    hashtag.append("text")
+      .datum(function (d) { return { id: d.hashtag, value: d.values[d.values.length - 1] }; })
+      .attr("transform", (d) => "translate(" + this.x(d.value.datetime) + "," + this.y(d.value.frequency) + ")")
+      .attr("x", 3)
+      .attr("dy", "0.35em")
+      .style("font", "10px sans-serif")
+      .text(function (d) { return d.hashtag; });
+  }
+
 
 }

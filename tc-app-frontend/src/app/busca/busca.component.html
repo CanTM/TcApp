@@ -49,9 +49,13 @@
   <div id="stream">
     <h5>Ranking de hashtags</h5>
     <svg width="1200" height="600"></svg>
+    <ol *ngFor="let hash of STREAM">
+      {{ hash.order }} - {{ hash.key }}
+    </ol>
   </div>
 
-  <ol *ngFor="let hash of STREAM">
-    {{ hash.order }} - {{ hash.key }}
-  </ol>
+  <div id="lifecycle">
+    <h5>Ciclo de vida de hashtags</h5>
+    <svg width="1200" height="600"></svg>
+  </div>
 </div>
