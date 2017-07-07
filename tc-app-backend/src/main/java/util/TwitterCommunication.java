@@ -9,7 +9,10 @@ import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.bson.Document;
+
 import com.google.common.collect.Lists;
+import com.mongodb.client.MongoCollection;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
@@ -65,9 +68,8 @@ public class TwitterCommunication {
 		long endTime = System.currentTimeMillis() + timeInterval;
 		System.out.println("Vou entrar no client");
 		while (!client.isDone() && System.currentTimeMillis() < endTime) {
-			// DbCommunication db = new DbCommunication();
-			// MongoCollection<Document> collection =
-			// db.getDatabase().getCollection("tweets");
+			DbCommunication db = new DbCommunication();
+			MongoCollection<Document> collection = db.getDatabase().getCollection("tweets");
 			System.out.println("Antes do take" + nroTweets);
 			String msg = msgQueue.take();
 			System.out.println(msg);
@@ -100,18 +102,15 @@ public class TwitterCommunication {
 				}
 			}
 
-			// Document doc = new Document("tweet", msg).append("userName",
-			// search.getUser().getUserName())
-			// .append("searchName", search.getSearchName());
-			// collection.insertOne(doc);
+			Document doc = new Document("tweet", msg).append("userName", search.getUser().getUserName())
+					.append("searchName", search.getSearchName());
+			collection.insertOne(doc);
 			nroTweets++;
 			System.out.println(nroTweets);
-			// db.closeDb();
+			db.closeDb();
 		}
 		client.stop();
 		System.out.println("Saí do client: " + nroTweets);
-
-		// "hashtags":[{"text":"PrincipeEngin","indices":[38,52]},{"text":"Daghan","indices":[53,60]},{"text":"Selvi","indices":[61,67]}]
 
 		boolean haveHashtags = false;
 		StringBuilder sb = new StringBuilder();
